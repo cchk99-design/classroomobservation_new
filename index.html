@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>言語治療課室觀察記錄表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --blue: #2980b9; --bg: #f0f2f5; --card: #ffffff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background-color: var(--bg); color: #333; -webkit-tap-highlight-color: transparent; }
+        
+        /* 置頂導航 */
+        .sticky-header { position: sticky; top: 0; z-index: 100; background: var(--primary); color: white; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .jump-menu { width: 100%; padding: 10px; border-radius: 6px; background: #fff; color: #333; border: none; font-size: 14px; font-weight: bold; }
+        .stu-names-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; font-size: 12px; text-align: center; margin-top: 8px; }
+        .stu-names-bar div { background: rgba(255,255,255,0.2); padding: 4px; border-radius: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .main-container { padding: 15px; padding-bottom: 120px; }
+        details.info-section { background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
+        summary { font-weight: bold; cursor: pointer; color: var(--primary); }
+
+        /* 卡片設計 */
+        .item-card { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 6px solid var(--blue); }
+        .cat-tag { font-size: 11px; color: #fff; background: var(--primary); padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 5px; }
+        .sub-tag { font-size: 13px; color: #7f8c8d; display: block; margin-bottom: 5px; font-weight: bold; }
+        .item-text { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--primary); line-height: 1.4; }
+
+        /* 評分區 */
+        .scoring-row { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 768px) { .scoring-row { grid-template-columns: 1fr 1fr 1fr; } }
+        .stu-unit { background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .stu-label { font-size: 13px; font-weight: bold; margin-bottom: 8px; display: block; color: var(--primary); border-bottom: 1px solid #ddd; padding-bottom: 3px; }
+        .btn-group { display: flex; gap: 5px; margin-bottom: 8px; }
+        .btn-group label { flex: 1; }
+        .btn-group input { display: none; }
+        .btn-group span { display: block; padding: 12px 0; background: #eee; border-radius: 6px; text-align: center; cursor: pointer; font-weight: bold; user-select: none; }
+        .btn-group input:checked + span { background: var(--accent); color: white; }
+        .btn-group input[value="1"]:checked + span { background: #f39c12; }
+        .btn-group input[value="0"]:checked + span { background: #e74c3c; }
+        .rem-box { width: 100%; border: 1px solid #ccc; border-radius: 6px; padding: 8px; font-size: 14px; box-sizing: border-box; resize: none; background: #fff; }
+
+        /* 浮動按鈕 */
+        .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
+        .fab { width: 56px; height: 56px; border-radius: 28px; border: none; color: white; cursor: pointer; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); font-weight: bold; }
+
+        /* 導出區 */
+        #export-temp { position: absolute; left: -9999px; background: white; width: 800px; padding: 20px; }
+        .ex-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .ex-table th, .ex-table td { border: 1px solid #333; padding: 8px; text-align: left; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="sticky-header no-print">
+    <div class="header-top">
+        <span>觀察記錄表</span>
+        <input type="date" id="mainDate" onchange="autoSave()">
+    </div>
+    <select class="jump-menu" onchange="location.href='#'+this.value">
+        <option value="">快速跳轉範疇...</option>
+        <option value="cat0">（一）遵守規則及指令</option>
+        <option value="cat1">（一）上課時給予反應</option>
+        <option value="cat2">（一）與朋輩討論</option>
+        <option value="cat3">（一）獨立完成工作</option>
+        <option value="cat4">（一）轉換及靈活性</option>
+        <option value="cat5">（二）恰當運用語言</option>
+        <option value="cat6">（二）理解及運用非語言訊息</option>
+        <option value="cat7">（二）運用語言作不同用途</option>
+        <option value="cat8">（二）開展/加入/完結對話</option>
+        <option value="cat9">（二）調節對話內容</option>
+        <option value="cat10">（二）維持對話及互動</option>
+        <option value="cat11">（二）解讀別人的想法</option>
+        <option value="cat12">（二）調整自己的行為</option>
+        <option value="cat13">（二）解決困難</option>
+        <option value="cat14">（二）社交禮儀</option>
+        <option value="cat15">（二）友善對待別人</option>
+        <option value="cat16">（二）與朋輩參與遊戲</option>
+        <option value="cat17">（二）遊戲中表現合宜行為</option>
+        <option value="cat18">（二）處理意見分歧及拒絕</option>
+        <option value="cat19">（二）理解及調控情緒</option>
+    </select>
+    <div class="stu-names-bar">
+        <div id="barA">學生 A</div><div id="barB">學生 B</div><div id="barC">學生 C</div>
+    </div>
+</div>
+
+<div class="main-container no-print">
+    <details class="info-section">
+        <summary>設定學生姓名及活動</summary>
+        <div style="padding-top:10px;">
+            <div style="margin-bottom:10px;"><input type="text" id="nameA" placeholder="A 姓名" oninput="syncNames(); autoSave();" style="width:30%"> <input type="text" id="actA" placeholder="A 活動內容" oninput="autoSave();" style="width:65%"></div>
+            <div style="margin-bottom:10px;"><input type="text" id="nameB" placeholder="B 姓名" oninput="syncNames(); autoSave();" style="width:30%"> <input type="text" id="actB" placeholder="B 活動內容" oninput="autoSave();" style="width:65%"></div>
+            <div><input type="text" id="nameC" placeholder="C 姓名" oninput="syncNames(); autoSave();" style="width:30%"> <input type="text" id="actC" placeholder="C 活動內容" oninput="autoSave();" style="width:65%"></div>
+        </div>
+    </details>
+    <div id="form-content"></div>
+</div>
+
+<div class="fab-container no-print">
+    <button class="fab" style="background:#e74c3c" onclick="clearAll()">清空</button>
+    <button class="fab" style="background:var(--blue)" onclick="doPNG()">PNG</button>
+    <button class="fab" style="background:var(--accent)" onclick="doPDF()">PDF</button>
+</div>
+
+<div id="export-temp"></div>
+
+<script>
+    const sections = [
+        { title: "（一）學習適應", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
+        { title: "（一）學習適應", sub: "【主題時間】 上課時給予反應", items: ["聽課時，會眼望老師及點頭表示明白", "被叫名字提問時，會嘗試作出回應", "能主動舉手回答老師問題"] },
+        { title: "（一）學習適應", sub: "【主題時間】 與朋輩討論", items: ["主動積極參與於與朋輩的討論中", "知道老師現在指示同學們討論甚麼題目", "能專心聆聽伙伴的分享或意見", "以點頭或說話回應對方，示意知道或同意", "分享自己的答案、想法或意見", "內容：有條理、與主題相關", "身體語言：轉向對方或有眼神接觸、保持適當距離", "語言：合適聲量、語氣有禮", "向伙伴提出相關問題"] },
+        { title: "（一）學習適應", sub: "【分組時間／功課時間】 獨立完成工作", items: ["自發地開展工作", "獨立地按指示完成工作", "持續專注地工作"] },
+        { title: "（一）學習適應", sub: "【分組時間／功課時間】 轉換及靈活性", items: ["能分辨事情重要性，計劃完成的先後次序", "能分辨事情重要性或按老師指令，加快完成桌上工作或暫時先放下未完成的工作", "接受流程或規則的改變", "按計劃自行由一項活動轉換到另一活動"] },
+        { title: "（二）社交適應", sub: "【語言及非語言溝通】 恰當運用語言", items: ["能清晰具體地表達", "能運用恰當語速", "能運用恰當聲量", "能運用自然恰當的說話風格，例如：避免過分直接、只顧表達自己喜好的話題（如：鐵路、天文、數學）"] },
+        { title: "（二）社交適應", sub: "【語言及非語言溝通】 理解及運用非語言訊息", items: ["保持恰當的眼神接觸", "聆聽別人說話時，能給予對方恰當的非語言訊息（如：點頭）", "按情景和關係，保持適當的社交距離", "溝通能運用恰當的動作、姿勢及面部表情", "能理解別人的目光、表情、姿勢及動作等非語言訊息的含意（例如別人皺眉、注視物品的意思）"] },
+        { title: "（二）社交適應", sub: "【語言及非語言溝通】 運用語言作不同用途", items: ["恰當地提出要求", "恰當地敘述事情", "恰當地解釋事物", "恰當地分享經驗、興趣或想法", "恰當地提出提議或意見", "恰當地提出問題"] },
+        { title: "（二）社交適應", sub: "【對話技巧】 恰當地開展、加入及完結對話", items: ["主動與別人開展交談或互動", "主動開展不同種類的話題", "在適當的時機加入其他人的對話，而不會打斷別人的說話", "恰當地完結對話或互動"] },
+        { title: "（二）社交適應", sub: "【對話技巧】 因應情況調節對話內容", items: ["當別人不明白或有誤解時，能重複一次、調整用詞、加入更多解釋、加入手勢、展示物品等方法以作澄清", "根據別人的反應來調整對話內容及行為（例如：留意到對方對自己的話題不感興趣時，便終止話題；留意到對方忙碌中，便暫停對話）"] },
+        { title: "（二）社交適應", sub: "【對話技巧】 維持對話及互動", items: ["別人對他說話時，會留心聆聽（例如：身體轉向對方、有眼神接觸、間中點頭等）", "別人對他說話時，會回應或回答", "能與人輪流說話，不會中途插入", "能保持恰當的說話頻次，不會過分霸佔或主導對話", "對話時不離題", "能提出想法、意見或更多資料，以維持對話", "能向對方提出問題，以維持對話", "對話時，遇上不明白之處會主動要求澄清", "在對話中，能自然地轉換話題"] },
+        { title: "（二）社交適應", sub: "【社交思考及解難】 解讀別人的想法", items: ["理解別人的觀點和感受", "能理解別人的意圖（包括善意及惡意）", "能明白自己的行為會如何影響別人對自己的印象（例如用手指著別人的臉說話，會令人覺得自己沒有禮貌）"] },
+        { title: "（二）社交適應", sub: "【社交思考及解難】 運用社交思考，調整自己的行為", items: ["能夠就對方的反應調整自己的行為（情緒、語言、非語言調整）", "能理解在不同場合的預期行為（例如圖書館、巴士、課室規則）"] },
+        { title: "（二）社交適應", sub: "【社交思考及解難】 平和地面對問題及合宜地解決困難", items: ["平和地面對和處理自己的過失", "平和地面對和處理不如意的事情", "能分辨是小問題或大問題，作出小反應或大反應", "做事或說話前會考慮後果", "能指出現在遇到的困難或問題", "能主動尋求成人或朋輩的幫助，及接受幫助", "能運用不同方法去解決問題"] },
+        { title: "（二）社交適應", sub: "【友善行為】 社交禮儀", items: ["能以表情或動作表示友好（例如微笑、擁抱）", "恰當地跟別人打招呼及回應別人的打招呼", "能主動道歉（例如對唔住、唔好意思）", "能運用表達禮貌的字詞（例如唔該、請、多謝）", "恰當地回應讚美和欣賞", "恰當地表示反對或拒絕"] },
+        { title: "（二）社交適應", sub: "【友善行為】 友善對待別人", items: ["懂得鼓勵、讚美和欣賞別人", "在合情合理的情況下，才投訴或指出別人的錯處", "別人打擾或阻礙到自己時，能合宜地處理", "能向別人表達關心", "主動幫助別人", "主動安慰別人", "分享別人的歡樂（例如別人勝出時，會一起歡呼）"] },
+        { title: "（二）社交適應", sub: "【遊戲活動】 與朋輩一起參與遊戲", items: ["接受朋輩加入自己的遊戲", "主動而合宜地加入朋輩的遊戲", "會主動邀請朋輩一起進行遊戲", "合宜地完結或離開與別人進行中的遊戲", "參與多樣化的興趣活動"] },
+        { title: "（二）社交適應", sub: "【遊戲活動】 在遊戲中表現合宜的行為", items: ["恰當地運用遊戲物品和設施", "懂得分享遊戲物品", "懂得與朋輩輪流玩耍", "遵守遊戲規則", "與朋輩一起玩假想遊戲", "當別人與自己有不同興趣時，能作出協商或妥協", "遊戲時，能平和地面對失敗"] },
+        { title: "（二）社交適應", sub: "【處理意見分歧及拒絕】", items: ["能察覺有意見分歧或衝突", "面對意見分歧，在合適的情況下願意妥協", "面對意見分歧，嘗試與人協商議以達成共識", "解釋自己所提議的好處，或別人所提議的壞處", "以包剪揼、鬥快舉手等方法決定誰作主", "提出輪流作主", "嘗試融合兩人的意見，以達成共識", "能合宜地拒絕對方的提議", "被對方拒絕時，能作出恰當回應"] },
+        { title: "（二）社交適應", sub: "【情緒表達、理解及調控】", items: ["能以表情、動作及語氣來表達情緒", "能運用基礎/進階情緒詞彙描述狀態", "明白情緒有不同的程度並恰當表達", "能解釋自己及別人出現情緒背後的原因", "能運用恰當策略調控情緒(憤怒/緊張/不開心/興奮)", "平復心情後能重新參與活動"] }
+    ];
+
+    function init() {
+        const wrap = document.getElementById('form-content');
+        sections.forEach((sec, sIdx) => {
+            const anchor = document.createElement('div'); anchor.id = `cat${sIdx}`; wrap.appendChild(anchor);
+            sec.items.forEach((item, iIdx) => {
+                const id = `s${sIdx}i${iIdx}`;
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.innerHTML = `<div class="cat-tag">${sec.title}</div><div class="sub-tag">${sec.sub}</div><div class="item-text">${item}</div>
+                    <div class="scoring-row">${['A','B','C'].map(ch=>`<div class="stu-unit"><span class="stu-label dis${ch}">學生 ${ch}</span><div class="btn-group">
+                    <label><input type="radio" name="${id}_${ch}" value="0" onclick="handleRadioClick(this)"><span>0</span></label>
+                    <label><input type="radio" name="${id}_${ch}" value="1" onclick="handleRadioClick(this)"><span>1</span></label>
+                    <label><input type="radio" name="${id}_${ch}" value="2" onclick="handleRadioClick(this)"><span>2</span></label></div>
+                    <textarea class="rem-box" id="rem_${id}_${ch}" oninput="autoSave()" placeholder="備註..."></textarea></div>`).join('')}</div>`;
+                wrap.appendChild(card);
+            });
+        });
+        loadData();
+    }
+
+    function handleRadioClick(radio) {
+        if (radio.dataset.wasChecked === "true") {
+            radio.checked = false;
+            radio.dataset.wasChecked = "false";
+        } else {
+            const name = radio.name;
+            document.querySelectorAll(`input[name="${name}"]`).forEach(r => r.dataset.wasChecked = "false");
+            radio.dataset.wasChecked = "true";
+        }
+        autoSave();
+    }
+
+    function syncNames() { ['A','B','C'].forEach(ch=>{const n=document.getElementById('name'+ch).value||'學生'+ch; document.querySelectorAll('.dis'+ch).forEach(e=>e.innerText=n); document.getElementById('bar'+ch).innerText=n;}); }
+    
+    function autoSave() {
+        const s = {
+            d: document.getElementById('mainDate').value,
+            n: { A: document.getElementById('nameA').value, B: document.getElementById('nameB').value, C: document.getElementById('nameC').value },
+            a: { A: document.getElementById('actA').value, B: document.getElementById('actB').value, C: document.getElementById('actC').value },
+            s: {}, r: {}
+        };
+        document.querySelectorAll('input[type="radio"]:checked').forEach(i => s.s[i.name] = i.value);
+        document.querySelectorAll('.rem-box').forEach(t => s.r[t.id] = t.value);
+        localStorage.setItem('sl_vFinal_data', JSON.stringify(s));
+    }
+
+    function loadData() {
+        const raw = localStorage.getItem('sl_vFinal_data');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        document.getElementById('mainDate').value = d.d || "";
+        ['A','B','C'].forEach(ch => {
+            document.getElementById('name'+ch).value = d.n[ch] || "";
+            document.getElementById('act'+ch).value = d.a[ch] || "";
+        });
+        syncNames();
+        for (let k in d.s) {
+            const el = document.querySelector(`input[name="${k}"][value="${d.s[k]}"]`);
+            if (el) {
+                el.checked = true;
+                el.dataset.wasChecked = "true";
+            }
+        }
+        for (let k in d.r) {
+            const el = document.getElementById(k);
+            if (el) el.value = d.r[k];
+        }
+    }
+
+    function clearAll() { if(confirm('確定清除？')) { localStorage.removeItem('sl_vFinal_data'); location.reload(); } }
+
+    function getSummary() { 
+        const date = document.getElementById('mainDate').value || "未填";
+        let h = `<div style="padding:20px; width:750px; background:white; font-family:sans-serif;"><h2>觀察記錄摘要</h2><p>日期：${date}</p><hr>`;
+        ['A','B','C'].forEach(ch => {
+            let rows = "";
+            sections.forEach((sec, sIdx) => { 
+                sec.items.forEach((item, iIdx) => {
+                    const id = `s${sIdx}i${iIdx}_${ch}`;
+                    const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
+                    const rm = document.getElementById(`rem_${id}`).value.trim();
+                    
+                    // 匯出條件：包含 1分 或 有備註 的項目
+                    if (sc === "0" || sc === "1" || rm !== "") {
+                        let scLabel = "";
+                        if (sc === "0") scLabel = "<b>【未達標 (0分)】</b> ";
+                        else if (sc === "1") scLabel = "<b>【目標 (1分)】</b> ";
+                        
+                        rows += `<tr>
+                            <td style="border:1px solid #333;padding:8px;">${sec.sub}<br>• ${item}</td>
+                            <td style="border:1px solid #333;padding:8px;">${scLabel}${rm}</td>
+                        </tr>`;
+                    }
+                });
+            });
+            if (rows) {
+                h += `<h3>學生：${document.getElementById('name'+ch).value||ch}</h3>
+                      <p>活動：${document.getElementById('act'+ch).value||"---"}</p>
+                      <table style="width:100%;border-collapse:collapse;border:1px solid #333;">
+                        <tr>
+                            <th style="border:1px solid #333;padding:8px;background:#eee;width:60%;">項目</th>
+                            <th style="border:1px solid #333;padding:8px;background:#eee;width:40%;">記錄</th>
+                        </tr>
+                        ${rows}
+                      </table><br>`;
+            }
+        });
+        return h + `</div>`;
+    }
+
+    function doPDF() { document.getElementById('export-temp').innerHTML = getSummary(); window.print(); }
+    async function doPNG() { const t=document.getElementById('export-temp'); t.innerHTML=getSummary(); const cvs=await html2canvas(t,{scale:2}); const a=document.createElement('a'); a.download=`觀察記錄.png`; a.href=cvs.toDataURL(); a.click(); }
+    window.onload = init;
+</script>
+</body>
+</html>
