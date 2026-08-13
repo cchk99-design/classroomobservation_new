@@ -211,11 +211,12 @@
                     const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
                     const rm = document.getElementById(`rem_${id}`).value.trim();
                     
-                    // 匯出條件：包含 1分 或 有備註 的項目
-                    if (sc === "0" || sc === "1" || rm !== "") {
+                    // 匯出條件：僅包含 1分 或 有備註 的項目
+                    if (sc === "1" || rm !== "") {
                         let scLabel = "";
-                        if (sc === "0") scLabel = "<b>【未達標 (0分)】</b> ";
+                        if (sc === "0") scLabel = "<b>【0分】</b> ";
                         else if (sc === "1") scLabel = "<b>【目標 (1分)】</b> ";
+                        else if (sc === "2") scLabel = "<b>【2分】</b> ";
                         
                         rows += `<tr>
                             <td style="border:1px solid #333;padding:8px;">${sec.sub}<br>• ${item}</td>
