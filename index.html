@@ -7,18 +7,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
-            --primary-grad: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-            --sec1-grad: linear-gradient(135deg, #1d4350 0%, #a43931 100%);
-            --sec2-grad: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
-            --tag-grad: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%);
+            --primary-grad: linear-gradient(135deg, #8e54e9 0%, #d862bc 100%);
+            --sec1-grad: linear-gradient(135deg, #a155b9 0%, #f765a3 100%);
+            --sec2-grad: linear-gradient(135deg, #6a4c93 0%, #c06c84 100%);
+            --sub-grad: linear-gradient(135deg, #f3e7fa 0%, #fce4ec 100%);
+            --tag-grad: linear-gradient(135deg, #9d50bb 0%, #e056fd 100%);
             --green-grad: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             --orange-grad: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
             --red-grad: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            --blue-grad: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
-            --word-grad: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --bg-grad: linear-gradient(180deg, #eef2f3 0%, #dfe9f3 100%);
+            --blue-grad: linear-gradient(135deg, #7f7fd5 0%, #91eae4 100%);
+            --excel-grad: linear-gradient(135deg, #1d976c 0%, #93f9b9 100%);
+            --bg-grad: linear-gradient(180deg, #fdf2f8 0%, #f3e8ff 50%, #ede9fe 100%);
             --card: rgba(255, 255, 255, 0.96);
-            --text-dark: #2c3e50;
+            --text-dark: #3b2d4a;
         }
         
         body { 
@@ -35,9 +36,9 @@
             position: sticky; top: 0; z-index: 100; 
             background: var(--primary-grad); 
             color: white; padding: 12px 15px; 
-            box-shadow: 0 4px 15px rgba(43, 88, 118, 0.25); 
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
+            box-shadow: 0 4px 18px rgba(142, 84, 233, 0.28); 
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; gap: 8px; flex-wrap: wrap; }
         .header-controls { display: flex; gap: 8px; align-items: center; }
@@ -47,20 +48,20 @@
         }
         .jump-menu { 
             width: 100%; padding: 10px 12px; border-radius: 10px; 
-            background: rgba(255, 255, 255, 0.95); color: var(--text-dark); 
+            background: rgba(255, 255, 255, 0.96); color: var(--text-dark); 
             border: none; font-size: 14px; font-weight: bold; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(106, 76, 147, 0.12);
         }
         .stu-names-bar { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); 
             gap: 6px; font-size: 12px; font-weight: bold; text-align: center; margin-top: 10px; 
         }
         .stu-names-bar div { 
-            background: rgba(255, 255, 255, 0.18); 
+            background: rgba(255, 255, 255, 0.22); 
             backdrop-filter: blur(4px);
             padding: 5px 4px; border-radius: 8px; 
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.28);
         }
 
         .main-container { padding: 15px; padding-bottom: 140px; max-width: 1300px; margin: auto; }
@@ -68,29 +69,29 @@
         /* 學生設定摺疊區 */
         details.info-section { 
             background: var(--card); padding: 14px; border-radius: 14px; 
-            margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.8); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 18px; border: 1px solid rgba(233, 213, 255, 0.9); 
+            box-shadow: 0 4px 14px rgba(142, 84, 233, 0.06);
         }
-        details.info-section > summary { font-weight: bold; cursor: pointer; color: #3a6073; font-size: 15px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        details.info-section > summary { font-weight: bold; cursor: pointer; color: #7e22ce; font-size: 15px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
         details.info-section > summary::after { content: "▼"; font-size: 12px; transition: transform 0.2s; }
         details.info-section[open] > summary::after { transform: rotate(180deg); }
         details.info-section input {
-            border: 1px solid #d1d8e0; border-radius: 8px; padding: 8px 10px; font-size: 14px;
+            border: 1px solid #e9d5ff; border-radius: 8px; padding: 8px 10px; font-size: 14px;
             transition: border 0.2s;
         }
-        details.info-section input:focus { outline: none; border-color: #4e4376; }
+        details.info-section input:focus { outline: none; border-color: #a855f7; }
 
         /* 兩大主範疇摺疊區塊 */
         details.domain-section {
             margin-bottom: 22px;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.45);
-            box-shadow: 0 6px 20px rgba(31, 38, 135, 0.06);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 6px 22px rgba(142, 84, 233, 0.08);
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.85);
         }
         details.domain-section > summary.domain-header {
-            background: var(--primary-grad);
+            background: var(--sec2-grad);
             color: white;
             padding: 15px 18px;
             font-size: 17px;
@@ -107,10 +108,10 @@
             background: var(--sec1-grad);
         }
         details.domain-section > summary.domain-header::after {
-            content: "展開 / 收合 ▼";
+            content: "展開 ▼";
             font-size: 12px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.22);
+            padding: 4px 12px;
             border-radius: 12px;
             font-weight: normal;
         }
@@ -118,14 +119,52 @@
             content: "收合 ▲";
         }
         .domain-body {
-            padding: 15px 12px 5px 12px;
+            padding: 14px 12px 6px 12px;
+        }
+
+        /* 細分範疇（第二層摺疊區塊） */
+        details.sub-domain-section {
+            margin-bottom: 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid #f3e8ff;
+            box-shadow: 0 3px 10px rgba(168, 85, 247, 0.05);
+            overflow: hidden;
+        }
+        details.sub-domain-section > summary.sub-domain-header {
+            background: var(--sub-grad);
+            color: #6b21a8;
+            padding: 12px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            border-bottom: 1px solid rgba(233, 213, 255, 0.6);
+        }
+        details.sub-domain-section > summary.sub-domain-header::after {
+            content: "展開 ▾";
+            font-size: 12px;
+            color: #9333ea;
+            background: rgba(255, 255, 255, 0.75);
+            padding: 3px 9px;
+            border-radius: 10px;
+        }
+        details.sub-domain-section[open] > summary.sub-domain-header::after {
+            content: "收合 ▴";
+        }
+        .sub-domain-body {
+            padding: 12px 10px 2px 10px;
         }
 
         /* 卡片設計 */
         .item-card { 
-            background: var(--card); border-radius: 16px; padding: 18px; 
-            margin-bottom: 18px; box-shadow: 0 4px 14px rgba(31, 38, 135, 0.05); 
-            border: 1px solid rgba(255,255,255,0.9);
+            background: var(--card); border-radius: 14px; padding: 16px; 
+            margin-bottom: 16px; box-shadow: 0 4px 14px rgba(142, 84, 233, 0.06); 
+            border: 1px solid rgba(243, 232, 255, 0.9);
             position: relative; overflow: hidden;
         }
         .item-card::before {
@@ -137,11 +176,11 @@
         }
         .cat-tag { 
             font-size: 11px; color: #fff; background: var(--tag-grad); 
-            padding: 4px 10px; border-radius: 20px; display: inline-block; 
+            padding: 3px 10px; border-radius: 20px; display: inline-block; 
             margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;
         }
-        .sub-tag { font-size: 13px; color: #636e72; display: block; margin-bottom: 6px; font-weight: bold; }
-        .item-text { font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-dark); line-height: 1.5; }
+        .sub-tag { font-size: 13px; color: #7e22ce; display: block; margin-bottom: 6px; font-weight: bold; }
+        .item-text { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--text-dark); line-height: 1.5; }
 
         /* 動態人數評分區 */
         .scoring-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -161,12 +200,12 @@
         }
 
         .stu-unit { 
-            background: linear-gradient(145deg, #f8f9fa, #f1f3f6); 
-            padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; 
+            background: linear-gradient(145deg, #fdfaff, #f8f0fc); 
+            padding: 12px; border-radius: 12px; border: 1px solid #f3e8ff; 
         }
         .stu-label { 
             font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block; 
-            color: #3a6073; border-bottom: 1px solid #dfe6e9; padding-bottom: 4px; 
+            color: #6b21a8; border-bottom: 1px solid #e9d5ff; padding-bottom: 4px; 
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
         .btn-group { display: flex; gap: 6px; margin-bottom: 10px; }
@@ -174,11 +213,11 @@
         .btn-group input { display: none; }
         .btn-group span { 
             display: block; padding: 11px 0; 
-            background: #e2e8f0; color: #4a5568;
+            background: #ede9fe; color: #5b21b6;
             border-radius: 10px; text-align: center; cursor: pointer; 
             font-weight: bold; user-select: none; 
             transition: all 0.2s ease;
-            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.05);
+            box-shadow: inset 0 -2px 0 rgba(107, 33, 168, 0.08);
         }
         .btn-group input:checked + span { 
             background: var(--green-grad); color: white; 
@@ -194,26 +233,26 @@
             box-shadow: 0 4px 10px rgba(235, 51, 73, 0.35);
         }
         .rem-box { 
-            width: 100%; border: 1px solid #dce1e7; border-radius: 8px; 
+            width: 100%; border: 1px solid #e9d5ff; border-radius: 8px; 
             padding: 8px 10px; font-size: 14px; box-sizing: border-box; 
             resize: none; background: #fff; transition: border 0.2s;
         }
-        .rem-box:focus { outline: none; border-color: #3a7bd5; }
+        .rem-box:focus { outline: none; border-color: #a855f7; }
 
         /* 浮動按鈕 */
         .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
         .fab { 
             width: 56px; height: 56px; border-radius: 28px; border: none; 
             color: white; cursor: pointer; font-size: 12px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.25); font-weight: bold; 
+            box-shadow: 0 6px 15px rgba(107, 33, 168, 0.28); font-weight: bold; 
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex; align-items: center; justify-content: center;
         }
         .fab:active { transform: scale(0.94); }
         .fab-clear { background: var(--red-grad); }
-        .fab-word { background: var(--word-grad); }
-        .fab-png { background: var(--blue-grad); }
-        .fab-pdf { background: var(--green-grad); }
+        .fab-excel { background: var(--excel-grad); color: #064e3b; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
+        .fab-png { background: var(--blue-grad); color: #1e293b; }
+        .fab-pdf { background: var(--primary-grad); }
 
         /* 導出區 */
         #export-temp { position: absolute; left: -9999px; background: white; width: 800px; padding: 20px; }
@@ -241,28 +280,28 @@
     <select class="jump-menu" onchange="jumpToCategory(this.value)">
         <option value="">快速跳轉範疇...</option>
         <optgroup label="（一）學習適應">
-            <option value="cat0">（一）遵守規則及指令</option>
-            <option value="cat1">（一）上課時給予反應</option>
-            <option value="cat2">（一）與朋輩討論</option>
-            <option value="cat3">（一）獨立完成工作</option>
-            <option value="cat4">（一）轉換及靈活性</option>
+            <option value="cat0">【主題時間】遵守規則及指令</option>
+            <option value="cat1">【主題時間】上課時給予反應</option>
+            <option value="cat2">【主題時間】與朋輩討論</option>
+            <option value="cat3">【分組時間／功課時間】獨立完成工作</option>
+            <option value="cat4">【分組時間／功課時間】轉換及靈活性</option>
         </optgroup>
         <optgroup label="（二）社交適應">
-            <option value="cat5">（二）恰當運用語言</option>
-            <option value="cat6">（二）理解及運用非語言訊息</option>
-            <option value="cat7">（二）運用語言作不同用途</option>
-            <option value="cat8">（二）開展/加入/完結對話</option>
-            <option value="cat9">（二）調節對話內容</option>
-            <option value="cat10">（二）維持對話及互動</option>
-            <option value="cat11">（二）解讀別人的想法</option>
-            <option value="cat12">（二）調整自己的行為</option>
-            <option value="cat13">（二）解決困難</option>
-            <option value="cat14">（二）社交禮儀</option>
-            <option value="cat15">（二）友善對待別人</option>
-            <option value="cat16">（二）與朋輩參與遊戲</option>
-            <option value="cat17">（二）遊戲中表現合宜行為</option>
-            <option value="cat18">（二）處理意見分歧及拒絕</option>
-            <option value="cat19">（二）理解及調控情緒</option>
+            <option value="cat5">【語言及非語言溝通】恰當運用語言</option>
+            <option value="cat6">【語言及非語言溝通】理解及運用非語言訊息</option>
+            <option value="cat7">【語言及非語言溝通】運用語言作不同用途</option>
+            <option value="cat8">【對話技巧】開展/加入/完結對話</option>
+            <option value="cat9">【對話技巧】因應情況調節對話內容</option>
+            <option value="cat10">【對話技巧】維持對話及互動</option>
+            <option value="cat11">【社交思考及解難】解讀別人的想法</option>
+            <option value="cat12">【社交思考及解難】運用社交思考調整行為</option>
+            <option value="cat13">【社交思考及解難】平和面對問題及解決困難</option>
+            <option value="cat14">【友善行為】社交禮儀</option>
+            <option value="cat15">【友善行為】友善對待別人</option>
+            <option value="cat16">【遊戲活動】與朋輩一起參與遊戲</option>
+            <option value="cat17">【遊戲活動】在遊戲中表現合宜的行為</option>
+            <option value="cat18">【處理意見分歧及拒絕】</option>
+            <option value="cat19">【情緒表達、理解及調控】</option>
         </optgroup>
     </select>
     <div class="stu-names-bar" id="stuNamesBar"></div>
@@ -278,7 +317,7 @@
 
 <div class="fab-container no-print">
     <button class="fab fab-clear" onclick="clearAll()">清空</button>
-    <button class="fab fab-word" onclick="doWord()">Word</button>
+    <button class="fab fab-excel" onclick="doExcel()">Excel</button>
     <button class="fab fab-png" onclick="doPNG()">PNG</button>
     <button class="fab fab-pdf" onclick="doPDF()">PDF</button>
 </div>
@@ -290,26 +329,26 @@
     let currentCount = 3;
 
     const sections = [
-        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
-        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 上課時給予反應", items: ["聽課時，會眼望老師及點頭表示明白", "被叫名字提問時，會嘗試作出回應", "能主動舉手回答老師問題"] },
-        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 與朋輩討論", items: ["主動積極參與於與朋輩的討論中", "知道老師現在指示同學們討論甚麼題目", "能專心聆聽伙伴的分享或意見", "以點頭或說話回應對方，示意知道或同意", "分享自己的答案、想法或意見", "內容：有條理、與主題相關", "身體語言：轉向對方或有眼神接觸、保持適當距離", "語言：合適聲量、語氣有禮", "向伙伴提出相關問題"] },
-        { domain: 1, title: "（一）學習適應", sub: "【分組時間／功課時間】 獨立完成工作", items: ["自發地開展工作", "獨立地按指示完成工作", "持續專注地工作"] },
-        { domain: 1, title: "（一）學習適應", sub: "【分組時間／功課時間】 轉換及靈活性", items: ["能分辨事情重要性，計劃完成的先後次序", "能分辨事情重要性或按老師指令，加快完成桌上工作或暫時先放下未完成的工作", "接受流程或規則的改變", "按計劃自行由一項活動轉換到另一活動"] },
-        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 恰當運用語言", items: ["能清晰具體地表達", "能運用恰當語速", "能運用恰當聲量", "能運用自然恰當的說話風格，例如：避免過分直接、只顧表達自己喜好的話題（如：鐵路、天文、數學）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 理解及運用非語言訊息", items: ["保持恰當的眼神接觸", "聆聽別人說話時，能給予對方恰當的非語言訊息（如：點頭）", "按情景和關係，保持適當的社交距離", "溝通能運用恰當的動作、姿勢及面部表情", "能理解別人的目光、表情、姿勢及動作等非語言訊息的含意（例如別人皺眉、注視物品的意思）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 運用語言作不同用途", items: ["恰當地提出要求", "恰當地敘述事情", "恰當地解釋事物", "恰當地分享經驗、興趣或想法", "恰當地提出提議或意見", "恰當地提出問題"] },
-        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 恰當地開展、加入及完結對話", items: ["主動與別人開展交談或互動", "主動開展不同種類的話題", "在適當的時機加入其他人的對話，而不會打斷別人的說話", "恰當地完結對話或互動"] },
-        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 因應情況調節對話內容", items: ["當別人不明白或有誤解時，能重複一次、調整用詞、加入更多解釋、加入手勢、展示物品等方法以作澄清", "根據別人的反應來調整對話內容及行為（例如：留意到對方對自己的話題不感興趣時，便終止話題；留意到對方忙碌中，便暫停對話）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 維持對話及互動", items: ["別人對他說話時，會留心聆聽（例如：身體轉向對方、有眼神接觸、間中點頭等）", "別人對他說話時，會回應或回答", "能與人輪流說話，不會中途插入", "能保持恰當的說話頻次，不會過分霸佔或主導對話", "對話時不離題", "能提出想法、意見或更多資料，以維持對話", "能向對方提出問題，以維持對話", "對話時，遇上不明白之處會主動要求澄清", "在對話中，能自然地轉換話題"] },
-        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 解讀別人的想法", items: ["理解別人的觀點和感受", "能理解別人的意圖（包括善意及惡意）", "能明白自己的行為會如何影響別人對自己的印象（例如用手指著別人的臉說話，會令人覺得自己沒有禮貌）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 運用社交思考，調整自己的行為", items: ["能夠就對方的反應調整自己的行為（情緒、語言、非語言調整）", "能理解在不同場合的預期行為（例如圖書館、巴士、課室規則）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 平和地面對問題及合宜地解決困難", items: ["平和地面對和處理自己的過失", "平和地面對和處理不如意的事情", "能分辨是小問題或大問題，作出小反應或大反應", "做事或說話前會考慮後果", "能指出現在遇到的困難或問題", "能主動尋求成人或朋輩的幫助，及接受幫助", "能運用不同方法去解決問題"] },
-        { domain: 2, title: "（二）社交適應", sub: "【友善行為】 社交禮儀", items: ["能以表情或動作表示友好（例如微笑、擁抱）", "恰當地跟別人打招呼及回應別人的打招呼", "能主動道歉（例如對唔住、唔好意思）", "能運用表達禮貌的字詞（例如唔該、請、多謝）", "恰當地回應讚美和欣賞", "恰當地表示反對或拒絕"] },
-        { title: "（二）社交適應", domain: 2, sub: "【友善行為】 友善對待別人", items: ["懂得鼓勵、讚美和欣賞別人", "在合情合理的情況下，才投訴或指出別人的錯處", "別人打擾或阻礙到自己時，能合宜地處理", "能向別人表達關心", "主動幫助別人", "主動安慰別人", "分享別人的歡樂（例如別人勝出時，會一起歡呼）"] },
-        { domain: 2, title: "（二）社交適應", sub: "【遊戲活動】 與朋輩一起參與遊戲", items: ["接受朋輩加入自己的遊戲", "主動而合宜地加入朋輩的遊戲", "會主動邀請朋輩一起進行遊戲", "合宜地完結或離開與別人進行中的遊戲", "參與多樣化的興趣活動"] },
-        { domain: 2, title: "（二）社交適應", sub: "【遊戲活動】 在遊戲中表現合宜的行為", items: ["恰當地運用遊戲物品和設施", "懂得分享遊戲物品", "懂得與朋輩輪流玩耍", "遵守遊戲規則", "與朋輩一起玩假想遊戲", "當別人與自己有不同興趣時，能作出協商或妥協", "遊戲時，能平和地面對失敗"] },
-        { domain: 2, title: "（二）社交適應", sub: "【處理意見分歧及拒絕】", items: ["能察覺有意見分歧或衝突", "面對意見分歧，在合適的情況下願意妥協", "面對意見分歧，嘗試與人協商議以達成共識", "解釋自己所提議的好處，或別人所提議的壞處", "以包剪揼、鬥快舉手等方法決定誰作主", "提出輪流作主", "嘗試融合兩人的意見，以達成共識", "能合宜地拒絕對方的提議", "被對方拒絕時，能作出恰當回應"] },
-        { domain: 2, title: "（二）社交適應", sub: "【情緒表達、理解及調控】", items: ["能以表情、動作及語氣來表達情緒", "能運用基礎/進階情緒詞彙描述狀態", "明白情緒有不同的程度並恰當表達", "能解釋自己及別人出現情緒背後的原因", "能運用恰當策略調控情緒(憤怒/緊張/不開心/興奮)", "平復心情後能重新參與活動"] }
+        { domain: 1, title: "（一）學習適應", group: "【主題時間】", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
+        { domain: 1, title: "（一）學習適應", group: "【主題時間】", sub: "【主題時間】 上課時給予反應", items: ["聽課時，會眼望老師及點頭表示明白", "被叫名字提問時，會嘗試作出回應", "能主動舉手回答老師問題"] },
+        { domain: 1, title: "（一）學習適應", group: "【主題時間】", sub: "【主題時間】 與朋輩討論", items: ["主動積極參與於與朋輩的討論中", "知道老師現在指示同學們討論甚麼題目", "能專心聆聽伙伴的分享或意見", "以點頭或說話回應對方，示意知道或同意", "分享自己的答案、想法或意見", "內容：有條理、與主題相關", "身體語言：轉向對方或有眼神接觸、保持適當距離", "語言：合適聲量、語氣有禮", "向伙伴提出相關問題"] },
+        { domain: 1, title: "（一）學習適應", group: "【分組時間／功課時間】", sub: "【分組時間／功課時間】 獨立完成工作", items: ["自發地開展工作", "獨立地按指示完成工作", "持續專注地工作"] },
+        { domain: 1, title: "（一）學習適應", group: "【分組時間／功課時間】", sub: "【分組時間／功課時間】 轉換及靈活性", items: ["能分辨事情重要性，計劃完成的先後次序", "能分辨事情重要性或按老師指令，加快完成桌上工作或暫時先放下未完成的工作", "接受流程或規則的改變", "按計劃自行由一項活動轉換到另一活動"] },
+        { domain: 2, title: "（二）社交適應", group: "【語言及非語言溝通】", sub: "【語言及非語言溝通】 恰當運用語言", items: ["能清晰具體地表達", "能運用恰當語速", "能運用恰當聲量", "能運用自然恰當的說話風格，例如：避免過分直接、只顧表達自己喜好的話題（如：鐵路、天文、數學）"] },
+        { domain: 2, title: "（二）社交適應", group: "【語言及非語言溝通】", sub: "【語言及非語言溝通】 理解及運用非語言訊息", items: ["保持恰當的眼神接觸", "聆聽別人說話時，能給予對方恰當的非語言訊息（如：點頭）", "按情景和關係，保持適當的社交距離", "溝通能運用恰當的動作、姿勢及面部表情", "能理解別人的目光、表情、姿勢及動作等非語言訊息的含意（例如別人皺眉、注視物品的意思）"] },
+        { domain: 2, title: "（二）社交適應", group: "【語言及非語言溝通】", sub: "【語言及非語言溝通】 運用語言作不同用途", items: ["恰當地提出要求", "恰當地敘述事情", "恰當地解釋事物", "恰當地分享經驗、興趣或想法", "恰當地提出提議或意見", "恰當地提出問題"] },
+        { domain: 2, title: "（二）社交適應", group: "【對話技巧】", sub: "【對話技巧】 恰當地開展、加入及完結對話", items: ["主動與別人開展交談或互動", "主動開展不同種類的話題", "在適當的時機加入其他人的對話，而不會打斷別人的說話", "恰當地完結對話或互動"] },
+        { domain: 2, title: "（二）社交適應", group: "【對話技巧】", sub: "【對話技巧】 因應情況調節對話內容", items: ["當別人不明白或有誤解時，能重複一次、調整用詞、加入更多解釋、加入手勢、展示物品等方法以作澄清", "根據別人的反應來調整對話內容及行為（例如：留意到對方對自己的話題不感興趣時，便終止話題；留意到對方忙碌中，便暫停對話）"] },
+        { domain: 2, title: "（二）社交適應", group: "【對話技巧】", sub: "【對話技巧】 維持對話及互動", items: ["別人對他說話時，會留心聆聽（例如：身體轉向對方、有眼神接觸、間中點頭等）", "別人對他說話時，會回應或回答", "能與人輪流說話，不會中途插入", "能保持恰當的說話頻次，不會過分霸佔或主導對話", "對話時不離題", "能提出想法、意見或更多資料，以維持對話", "能向對方提出問題，以維持對話", "對話時，遇上不明白之處會主動要求澄清", "在對話中，能自然地轉換話題"] },
+        { domain: 2, title: "（二）社交適應", group: "【社交思考及解難】", sub: "【社交思考及解難】 解讀別人的想法", items: ["理解別人的觀點和感受", "能理解別人的意圖（包括善意及惡意）", "能明白自己的行為會如何影響別人對自己的印象（例如用手指著別人的臉說話，會令人覺得自己沒有禮貌）"] },
+        { domain: 2, title: "（二）社交適應", group: "【社交思考及解難】", sub: "【社交思考及解難】 運用社交思考，調整自己的行為", items: ["能夠就對方的反應調整自己的行為（情緒、語言、非語言調整）", "能理解在不同場合的預期行為（例如圖書館、巴士、課室規則）"] },
+        { domain: 2, title: "（二）社交適應", group: "【社交思考及解難】", sub: "【社交思考及解難】 平和地面對問題及合宜地解決困難", items: ["平和地面對和處理自己的過失", "平和地面對和處理不如意的事情", "能分辨是小問題或大問題，作出小反應或大反應", "做事或說話前會考慮後果", "能指出現在遇到的困難或問題", "能主動尋求成人或朋輩的幫助，及接受幫助", "能運用不同方法去解決問題"] },
+        { domain: 2, title: "（二）社交適應", group: "【友善行為】", sub: "【友善行為】 社交禮儀", items: ["能以表情或動作表示友好（例如微笑、擁抱）", "恰當地跟別人打招呼及回應別人的打招呼", "能主動道歉（例如對唔住、唔好意思）", "能運用表達禮貌的字詞（例如唔該、請、多謝）", "恰當地回應讚美和欣賞", "恰當地表示反對或拒絕"] },
+        { domain: 2, title: "（二）社交適應", group: "【友善行為】", sub: "【友善行為】 友善對待別人", items: ["懂得鼓勵、讚美和欣賞別人", "在合情合理的情況下，才投訴或指出別人的錯處", "別人打擾或阻礙到自己時，能合宜地處理", "能向別人表達關心", "主動幫助別人", "主動安慰別人", "分享別人的歡樂（例如別人勝出時，會一起歡呼）"] },
+        { domain: 2, title: "（二）社交適應", group: "【遊戲活動】", sub: "【遊戲活動】 與朋輩一起參與遊戲", items: ["接受朋輩加入自己的遊戲", "主動而合宜地加入朋輩的遊戲", "會主動邀請朋輩一起進行遊戲", "合宜地完結或離開與別人進行中的遊戲", "參與多樣化的興趣活動"] },
+        { domain: 2, title: "（二）社交適應", group: "【遊戲活動】", sub: "【遊戲活動】 在遊戲中表現合宜的行為", items: ["恰當地運用遊戲物品和設施", "懂得分享遊戲物品", "懂得與朋輩輪流玩耍", "遵守遊戲規則", "與朋輩一起玩假想遊戲", "當別人與自己有不同興趣時，能作出協商或妥協", "遊戲時，能平和地面對失敗"] },
+        { domain: 2, title: "（二）社交適應", group: "【處理意見分歧及拒絕】", sub: "【處理意見分歧及拒絕】", items: ["能察覺有意見分歧或衝突", "面對意見分歧，在合適的情況下願意妥協", "面對意見分歧，嘗試與人協商議以達成共識", "解釋自己所提議的好處，或別人所提議的壞處", "以包剪揼、鬥快舉手等方法決定誰作主", "提出輪流作主", "嘗試融合兩人的意見，以達成共識", "能合宜地拒絕對方的提議", "被對方拒絕時，能作出恰當回應"] },
+        { domain: 2, title: "（二）社交適應", group: "【情緒表達、理解及調控】", sub: "【情緒表達、理解及調控】", items: ["能以表情、動作及語氣來表達情緒", "能運用基礎/進階情緒詞彙描述狀態", "明白情緒有不同的程度並恰當表達", "能解釋自己及別人出現情緒背後的原因", "能運用恰當策略調控情緒(憤怒/緊張/不開心/興奮)", "平復心情後能重新參與活動"] }
     ];
 
     function getActiveLabels() {
@@ -342,11 +381,16 @@
         const wrap = document.getElementById('form-content');
         const labels = getActiveLabels();
         
-        // 保留目前兩個主區塊的展開/收合狀態
+        // 保留目前主區塊與細分區塊的展開/收合狀態
         const oldSec1 = document.getElementById('domain-sec-1');
         const oldSec2 = document.getElementById('domain-sec-2');
         const isSec1Open = oldSec1 ? oldSec1.open : true;
         const isSec2Open = oldSec2 ? oldSec2.open : true;
+
+        const openSubState = {};
+        document.querySelectorAll('details.sub-domain-section').forEach(el => {
+            openSubState[el.dataset.group] = el.open;
+        });
 
         wrap.innerHTML = `
             <details class="domain-section" id="domain-sec-1" ${isSec1Open ? 'open' : ''}>
@@ -361,13 +405,30 @@
 
         const body1 = document.getElementById('domain-body-1');
         const body2 = document.getElementById('domain-body-2');
+        const subBodies = {};
 
         sections.forEach((sec, sIdx) => {
-            const targetBody = sec.domain === 1 ? body1 : body2;
+            const targetDomainBody = sec.domain === 1 ? body1 : body2;
+            const groupKey = `${sec.domain}_${sec.group}`;
+
+            if (!subBodies[groupKey]) {
+                const subDetails = document.createElement('details');
+                subDetails.className = 'sub-domain-section';
+                subDetails.dataset.group = groupKey;
+                subDetails.open = openSubState.hasOwnProperty(groupKey) ? openSubState[groupKey] : true;
+                subDetails.innerHTML = `
+                    <summary class="sub-domain-header">${sec.group}</summary>
+                    <div class="sub-domain-body"></div>
+                `;
+                targetDomainBody.appendChild(subDetails);
+                subBodies[groupKey] = subDetails.querySelector('.sub-domain-body');
+            }
+
+            const targetSubBody = subBodies[groupKey];
             const anchor = document.createElement('div'); 
             anchor.id = `cat${sIdx}`; 
-            anchor.style.scrollMarginTop = "140px"; 
-            targetBody.appendChild(anchor);
+            anchor.style.scrollMarginTop = "145px"; 
+            targetSubBody.appendChild(anchor);
 
             sec.items.forEach((item, iIdx) => {
                 const id = `s${sIdx}i${iIdx}`;
@@ -379,7 +440,7 @@
                     <label><input type="radio" name="${id}_${ch}" value="1" onclick="handleRadioClick(this)"><span>1</span></label>
                     <label><input type="radio" name="${id}_${ch}" value="2" onclick="handleRadioClick(this)"><span>2</span></label></div>
                     <textarea class="rem-box" id="rem_${id}_${ch}" oninput="autoSave()" placeholder="備註..."></textarea></div>`).join('')}</div>`;
-                targetBody.appendChild(card);
+                targetSubBody.appendChild(card);
             });
         });
 
@@ -400,7 +461,6 @@
     }
 
     function changeStudentCount(newCount) {
-        // 先儲存目前畫面上的所有資料（包含尚未顯示出來的隱藏學生歷史資料）
         const currentData = getStoredOrCurrentData();
         currentCount = parseInt(newCount, 10);
         currentData.count = currentCount;
@@ -418,6 +478,11 @@
             const domainEl = document.getElementById(`domain-sec-${sec.domain}`);
             if (domainEl && !domainEl.open) {
                 domainEl.open = true;
+            }
+            const groupKey = `${sec.domain}_${sec.group}`;
+            const subEl = document.querySelector(`details.sub-domain-section[data-group="${groupKey}"]`);
+            if (subEl && !subEl.open) {
+                subEl.open = true;
             }
         }
         setTimeout(() => {
@@ -475,7 +540,6 @@
             if (aEl) base.a[ch] = aEl.value;
         });
 
-        // 清除目前顯示中題目的舊勾選，再重新寫入最新狀態
         sections.forEach((sec, sIdx) => {
             sec.items.forEach((item, iIdx) => {
                 getActiveLabels().forEach(ch => {
@@ -505,7 +569,7 @@
     function getSummary() { 
         const date = document.getElementById('mainDate').value || "未填";
         let h = `<div style="padding:20px; width:750px; background:white; font-family:'Microsoft JhengHei', sans-serif; color:#000;">
-                 <h2 style="color:#2b5876; border-bottom:2px solid #2b5876; padding-bottom:6px;">課室支援觀察記錄摘要</h2>
+                 <h2 style="color:#8e54e9; border-bottom:2px solid #8e54e9; padding-bottom:6px;">課室支援觀察記錄摘要</h2>
                  <p><strong>觀察日期：</strong>${date}</p><hr>`;
         getActiveLabels().forEach(ch => {
             let rows = "";
@@ -522,7 +586,7 @@
                         else if (sc === "2") scLabel = "<b>【2分】</b> ";
                         
                         rows += `<tr>
-                            <td style="border:1px solid #333;padding:8px;">${sec.sub}<br>• ${item}</td>
+                            <td style="border:1px solid #333;padding:8px;">${sec.title} - ${sec.sub}<br>• ${item}</td>
                             <td style="border:1px solid #333;padding:8px;">${scLabel}${rm}</td>
                         </tr>`;
                     }
@@ -531,12 +595,12 @@
             if (rows) {
                 const stuName = document.getElementById('name'+ch)?.value || `學生 ${ch}`;
                 const stuAct = document.getElementById('act'+ch)?.value || "---";
-                h += `<h3 style="color:#2c3e50; margin-top:20px;">學生：${stuName}</h3>
+                h += `<h3 style="color:#6b21a8; margin-top:20px;">學生：${stuName}</h3>
                       <p><strong>活動內容：</strong>${stuAct}</p>
                       <table style="width:100%;border-collapse:collapse;border:1px solid #333;">
                         <tr>
-                            <th style="border:1px solid #333;padding:8px;background:#eef2f3;width:60%;text-align:left;">觀察範疇與項目</th>
-                            <th style="border:1px solid #333;padding:8px;background:#eef2f3;width:40%;text-align:left;">目標 / 記錄</th>
+                            <th style="border:1px solid #333;padding:8px;background:#f3e8ff;width:60%;text-align:left;">觀察範疇與項目</th>
+                            <th style="border:1px solid #333;padding:8px;background:#f3e8ff;width:40%;text-align:left;">目標 / 記錄</th>
                         </tr>
                         ${rows}
                       </table><br>`;
@@ -561,19 +625,64 @@
         a.click(); 
     }
 
-    function doWord() {
-        const content = getSummary();
-        const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                        <head><meta charset='utf-8'><title>課室支援觀察記錄表</title></head><body>`;
-        const footer = `</body></html>`;
-        const sourceHTML = header + content + footer;
-        
-        const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+    function doExcel() {
+        const date = document.getElementById('mainDate').value || "未填";
+        let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="utf-8"></head><body>
+            <table border="1" style="border-collapse:collapse; font-family:'Microsoft JhengHei', sans-serif;">
+                <tr><th colspan="6" style="background:#8e54e9; color:#ffffff; font-size:16px; padding:10px;">課室支援觀察記錄摘要（觀察日期：${date}）</th></tr>
+                <tr style="background:#f3e8ff; font-weight:bold;">
+                    <th>學生姓名</th>
+                    <th>活動內容</th>
+                    <th>主範疇</th>
+                    <th>細分範疇</th>
+                    <th>觀察項目</th>
+                    <th>評分與備註</th>
+                </tr>`;
+
+        let hasAnyRow = false;
+        getActiveLabels().forEach(ch => {
+            const stuName = document.getElementById('name' + ch)?.value || `學生 ${ch}`;
+            const stuAct = document.getElementById('act' + ch)?.value || "---";
+            
+            sections.forEach((sec, sIdx) => {
+                sec.items.forEach((item, iIdx) => {
+                    const id = `s${sIdx}i${iIdx}_${ch}`;
+                    const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
+                    const rm = document.getElementById(`rem_${id}`)?.value.trim() || "";
+
+                    if (sc === "1" || rm !== "") {
+                        hasAnyRow = true;
+                        let scLabel = "";
+                        if (sc === "0") scLabel = "【0分】 ";
+                        else if (sc === "1") scLabel = "【目標 (1分)】 ";
+                        else if (sc === "2") scLabel = "【2分】 ";
+
+                        tableHtml += `<tr>
+                            <td>${stuName}</td>
+                            <td>${stuAct}</td>
+                            <td>${sec.title}</td>
+                            <td>${sec.sub}</td>
+                            <td>${item}</td>
+                            <td>${scLabel}${rm}</td>
+                        </tr>`;
+                    }
+                });
+            });
+        });
+
+        if (!hasAnyRow) {
+            tableHtml += `<tr><td colspan="6" style="text-align:center;">目前尚無評分為 1 分或填有備註之項目</td></tr>`;
+        }
+
+        tableHtml += `</table></body></html>`;
+
+        const blob = new Blob(['\ufeff', tableHtml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        const dateStr = document.getElementById('mainDate').value || new Date().toISOString().slice(0,10);
+        const dateStr = document.getElementById('mainDate').value || new Date().toISOString().slice(0, 10);
         link.href = url;
-        link.download = `課室觀察記錄_${dateStr}.doc`;
+        link.download = `課室觀察記錄_${dateStr}.xls`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
