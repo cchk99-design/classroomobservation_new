@@ -1,12 +1,3 @@
-已為你升級界面風格並加入匯出 Word 檔案的功能。
-本次更新重點：
- * 柔和現代漸變色彩：
-   * 背景改用淡雅的藍紫霧面漸變（#f3f5f9 至 #e4e9f2），減少長時間閱讀的視覺疲勞。
-   * 置頂導航欄、類別標籤、評分按鈕（紅、橙、綠）以及右下角懸浮按鈕全部改為質感漸變色與柔和陰影，在 iPad 和手機上的視覺層次更立體。
- * 新增「Word」匯出按鈕：
-   * 右下角懸浮按鈕新增了深藍色漸變的 「Word」 按鈕。
-   * 點擊後會直接生成並下載 .doc 格式的 Word 文件（內含完整表格排版，只篩選 1分目標 及 有填寫備註 的項目，與 PDF / PNG 規則一致），方便你後續在電腦或 iPad 上直接修改報告內容。
-請複製以下完整代碼並覆蓋 GitHub 上的 index.html：
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -17,6 +8,8 @@
     <style>
         :root { 
             --primary-grad: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+            --sec1-grad: linear-gradient(135deg, #1d4350 0%, #a43931 100%);
+            --sec2-grad: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
             --tag-grad: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%);
             --green-grad: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             --orange-grad: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
@@ -37,7 +30,7 @@
             -webkit-tap-highlight-color: transparent; 
         }
         
-        /* 置頂導航 - 漸變色 */
+        /* 置頂導航 */
         .sticky-header { 
             position: sticky; top: 0; z-index: 100; 
             background: var(--primary-grad); 
@@ -46,10 +39,11 @@
             border-bottom-left-radius: 16px;
             border-bottom-right-radius: 16px;
         }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; }
-        .header-top input[type="date"] {
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; gap: 8px; flex-wrap: wrap; }
+        .header-controls { display: flex; gap: 8px; align-items: center; }
+        .header-top input[type="date"], .count-select {
             border: none; border-radius: 8px; padding: 6px 10px; 
-            background: rgba(255, 255, 255, 0.9); color: var(--text-dark); font-weight: bold;
+            background: rgba(255, 255, 255, 0.95); color: var(--text-dark); font-weight: bold; font-size: 13px;
         }
         .jump-menu { 
             width: 100%; padding: 10px 12px; border-radius: 10px; 
@@ -57,38 +51,89 @@
             border: none; font-size: 14px; font-weight: bold; 
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        .stu-names-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 13px; font-weight: bold; text-align: center; margin-top: 10px; }
+        .stu-names-bar { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); 
+            gap: 6px; font-size: 12px; font-weight: bold; text-align: center; margin-top: 10px; 
+        }
         .stu-names-bar div { 
             background: rgba(255, 255, 255, 0.18); 
             backdrop-filter: blur(4px);
-            padding: 6px; border-radius: 8px; 
+            padding: 5px 4px; border-radius: 8px; 
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .main-container { padding: 15px; padding-bottom: 140px; max-width: 1200px; margin: auto; }
+        .main-container { padding: 15px; padding-bottom: 140px; max-width: 1300px; margin: auto; }
+        
+        /* 學生設定摺疊區 */
         details.info-section { 
             background: var(--card); padding: 14px; border-radius: 14px; 
             margin-bottom: 18px; border: 1px solid rgba(255,255,255,0.8); 
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        summary { font-weight: bold; cursor: pointer; color: #3a6073; font-size: 15px; }
+        details.info-section > summary { font-weight: bold; cursor: pointer; color: #3a6073; font-size: 15px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        details.info-section > summary::after { content: "▼"; font-size: 12px; transition: transform 0.2s; }
+        details.info-section[open] > summary::after { transform: rotate(180deg); }
         details.info-section input {
             border: 1px solid #d1d8e0; border-radius: 8px; padding: 8px 10px; font-size: 14px;
             transition: border 0.2s;
         }
         details.info-section input:focus { outline: none; border-color: #4e4376; }
 
+        /* 兩大主範疇摺疊區塊 */
+        details.domain-section {
+            margin-bottom: 22px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 6px 20px rgba(31, 38, 135, 0.06);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        details.domain-section > summary.domain-header {
+            background: var(--primary-grad);
+            color: white;
+            padding: 15px 18px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+            user-select: none;
+        }
+        details.domain-section#domain-sec-1 > summary.domain-header {
+            background: var(--sec1-grad);
+        }
+        details.domain-section > summary.domain-header::after {
+            content: "展開 / 收合 ▼";
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: normal;
+        }
+        details.domain-section[open] > summary.domain-header::after {
+            content: "收合 ▲";
+        }
+        .domain-body {
+            padding: 15px 12px 5px 12px;
+        }
+
         /* 卡片設計 */
         .item-card { 
             background: var(--card); border-radius: 16px; padding: 18px; 
-            margin-bottom: 20px; box-shadow: 0 6px 18px rgba(31, 38, 135, 0.06); 
+            margin-bottom: 18px; box-shadow: 0 4px 14px rgba(31, 38, 135, 0.05); 
             border: 1px solid rgba(255,255,255,0.9);
             position: relative; overflow: hidden;
         }
         .item-card::before {
             content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
             background: var(--primary-grad);
+        }
+        #domain-sec-1 .item-card::before {
+            background: var(--sec1-grad);
         }
         .cat-tag { 
             font-size: 11px; color: #fff; background: var(--tag-grad); 
@@ -98,9 +143,23 @@
         .sub-tag { font-size: 13px; color: #636e72; display: block; margin-bottom: 6px; font-weight: bold; }
         .item-text { font-size: 16px; font-weight: bold; margin-bottom: 16px; color: var(--text-dark); line-height: 1.5; }
 
-        /* 評分區 */
-        .scoring-row { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 768px) { .scoring-row { grid-template-columns: 1fr 1fr 1fr; } }
+        /* 動態人數評分區 */
+        .scoring-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 768px) { 
+            .scoring-row.cols-1 { grid-template-columns: 1fr; }
+            .scoring-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .scoring-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .scoring-row.cols-4 { grid-template-columns: repeat(2, 1fr); }
+            .scoring-row.cols-5, .scoring-row.cols-6 { grid-template-columns: repeat(3, 1fr); }
+            .scoring-row.cols-7, .scoring-row.cols-8 { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (min-width: 1100px) {
+            .scoring-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+            .scoring-row.cols-5 { grid-template-columns: repeat(5, 1fr); }
+            .scoring-row.cols-6 { grid-template-columns: repeat(3, 1fr); }
+            .scoring-row.cols-7, .scoring-row.cols-8 { grid-template-columns: repeat(4, 1fr); }
+        }
+
         .stu-unit { 
             background: linear-gradient(145deg, #f8f9fa, #f1f3f6); 
             padding: 12px; border-radius: 12px; border: 1px solid #e9ecef; 
@@ -108,12 +167,13 @@
         .stu-label { 
             font-size: 13px; font-weight: bold; margin-bottom: 10px; display: block; 
             color: #3a6073; border-bottom: 1px solid #dfe6e9; padding-bottom: 4px; 
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        .btn-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .btn-group { display: flex; gap: 6px; margin-bottom: 10px; }
         .btn-group label { flex: 1; }
         .btn-group input { display: none; }
         .btn-group span { 
-            display: block; padding: 12px 0; 
+            display: block; padding: 11px 0; 
             background: #e2e8f0; color: #4a5568;
             border-radius: 10px; text-align: center; cursor: pointer; 
             font-weight: bold; user-select: none; 
@@ -140,7 +200,7 @@
         }
         .rem-box:focus { outline: none; border-color: #3a7bd5; }
 
-        /* 浮動按鈕 - 漸變色 */
+        /* 浮動按鈕 */
         .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
         .fab { 
             width: 56px; height: 56px; border-radius: 28px; border: none; 
@@ -164,53 +224,54 @@
 <div class="sticky-header no-print">
     <div class="header-top">
         <span>課室支援觀察記錄表</span>
-        <input type="date" id="mainDate" onchange="autoSave()">
+        <div class="header-controls">
+            <select id="stuCount" class="count-select" onchange="changeStudentCount(this.value)">
+                <option value="1">1 位兒童</option>
+                <option value="2">2 位兒童</option>
+                <option value="3" selected>3 位兒童</option>
+                <option value="4">4 位兒童</option>
+                <option value="5">5 位兒童</option>
+                <option value="6">6 位兒童</option>
+                <option value="7">7 位兒童</option>
+                <option value="8">8 位兒童</option>
+            </select>
+            <input type="date" id="mainDate" onchange="autoSave()">
+        </div>
     </div>
-    <select class="jump-menu" onchange="if(this.value) location.href='#'+this.value">
+    <select class="jump-menu" onchange="jumpToCategory(this.value)">
         <option value="">快速跳轉範疇...</option>
-        <option value="cat0">（一）遵守規則及指令</option>
-        <option value="cat1">（一）上課時給予反應</option>
-        <option value="cat2">（一）與朋輩討論</option>
-        <option value="cat3">（一）獨立完成工作</option>
-        <option value="cat4">（一）轉換及靈活性</option>
-        <option value="cat5">（二）恰當運用語言</option>
-        <option value="cat6">（二）理解及運用非語言訊息</option>
-        <option value="cat7">（二）運用語言作不同用途</option>
-        <option value="cat8">（二）開展/加入/完結對話</option>
-        <option value="cat9">（二）調節對話內容</option>
-        <option value="cat10">（二）維持對話及互動</option>
-        <option value="cat11">（二）解讀別人的想法</option>
-        <option value="cat12">（二）調整自己的行為</option>
-        <option value="cat13">（二）解決困難</option>
-        <option value="cat14">（二）社交禮儀</option>
-        <option value="cat15">（二）友善對待別人</option>
-        <option value="cat16">（二）與朋輩參與遊戲</option>
-        <option value="cat17">（二）遊戲中表現合宜行為</option>
-        <option value="cat18">（二）處理意見分歧及拒絕</option>
-        <option value="cat19">（二）理解及調控情緒</option>
+        <optgroup label="（一）學習適應">
+            <option value="cat0">（一）遵守規則及指令</option>
+            <option value="cat1">（一）上課時給予反應</option>
+            <option value="cat2">（一）與朋輩討論</option>
+            <option value="cat3">（一）獨立完成工作</option>
+            <option value="cat4">（一）轉換及靈活性</option>
+        </optgroup>
+        <optgroup label="（二）社交適應">
+            <option value="cat5">（二）恰當運用語言</option>
+            <option value="cat6">（二）理解及運用非語言訊息</option>
+            <option value="cat7">（二）運用語言作不同用途</option>
+            <option value="cat8">（二）開展/加入/完結對話</option>
+            <option value="cat9">（二）調節對話內容</option>
+            <option value="cat10">（二）維持對話及互動</option>
+            <option value="cat11">（二）解讀別人的想法</option>
+            <option value="cat12">（二）調整自己的行為</option>
+            <option value="cat13">（二）解決困難</option>
+            <option value="cat14">（二）社交禮儀</option>
+            <option value="cat15">（二）友善對待別人</option>
+            <option value="cat16">（二）與朋輩參與遊戲</option>
+            <option value="cat17">（二）遊戲中表現合宜行為</option>
+            <option value="cat18">（二）處理意見分歧及拒絕</option>
+            <option value="cat19">（二）理解及調控情緒</option>
+        </optgroup>
     </select>
-    <div class="stu-names-bar">
-        <div id="barA">學生 A</div><div id="barB">學生 B</div><div id="barC">學生 C</div>
-    </div>
+    <div class="stu-names-bar" id="stuNamesBar"></div>
 </div>
 
 <div class="main-container no-print">
-    <details class="info-section">
-        <summary>設定學生姓名及活動內容（點擊展開）</summary>
-        <div style="padding-top:12px;">
-            <div style="margin-bottom:10px; display:flex; gap:8px;">
-                <input type="text" id="nameA" placeholder="A 姓名" oninput="syncNames(); autoSave();" style="width:32%"> 
-                <input type="text" id="actA" placeholder="A 活動內容" oninput="autoSave();" style="width:68%">
-            </div>
-            <div style="margin-bottom:10px; display:flex; gap:8px;">
-                <input type="text" id="nameB" placeholder="B 姓名" oninput="syncNames(); autoSave();" style="width:32%"> 
-                <input type="text" id="actB" placeholder="B 活動內容" oninput="autoSave();" style="width:68%">
-            </div>
-            <div style="display:flex; gap:8px;">
-                <input type="text" id="nameC" placeholder="C 姓名" oninput="syncNames(); autoSave();" style="width:32%"> 
-                <input type="text" id="actC" placeholder="C 活動內容" oninput="autoSave();" style="width:68%">
-            </div>
-        </div>
+    <details class="info-section" open>
+        <summary>設定學生姓名及活動內容（點擊展開 / 收合）</summary>
+        <div id="stuInputsContainer" style="padding-top:12px;"></div>
     </details>
     <div id="form-content"></div>
 </div>
@@ -225,47 +286,158 @@
 <div id="export-temp"></div>
 
 <script>
+    const ALL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    let currentCount = 3;
+
     const sections = [
-        { title: "（一）學習適應", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
-        { title: "（一）學習適應", sub: "【主題時間】 上課時給予反應", items: ["聽課時，會眼望老師及點頭表示明白", "被叫名字提問時，會嘗試作出回應", "能主動舉手回答老師問題"] },
-        { title: "（一）學習適應", sub: "【主題時間】 與朋輩討論", items: ["主動積極參與於與朋輩的討論中", "知道老師現在指示同學們討論甚麼題目", "能專心聆聽伙伴的分享或意見", "以點頭或說話回應對方，示意知道或同意", "分享自己的答案、想法或意見", "內容：有條理、與主題相關", "身體語言：轉向對方或有眼神接觸、保持適當距離", "語言：合適聲量、語氣有禮", "向伙伴提出相關問題"] },
-        { title: "（一）學習適應", sub: "【分組時間／功課時間】 獨立完成工作", items: ["自發地開展工作", "獨立地按指示完成工作", "持續專注地工作"] },
-        { title: "（一）學習適應", sub: "【分組時間／功課時間】 轉換及靈活性", items: ["能分辨事情重要性，計劃完成的先後次序", "能分辨事情重要性或按老師指令，加快完成桌上工作或暫時先放下未完成的工作", "接受流程或規則的改變", "按計劃自行由一項活動轉換到另一活動"] },
-        { title: "（二）社交適應", sub: "【語言及非語言溝通】 恰當運用語言", items: ["能清晰具體地表達", "能運用恰當語速", "能運用恰當聲量", "能運用自然恰當的說話風格，例如：避免過分直接、只顧表達自己喜好的話題（如：鐵路、天文、數學）"] },
-        { title: "（二）社交適應", sub: "【語言及非語言溝通】 理解及運用非語言訊息", items: ["保持恰當的眼神接觸", "聆聽別人說話時，能給予對方恰當的非語言訊息（如：點頭）", "按情景和關係，保持適當的社交距離", "溝通能運用恰當的動作、姿勢及面部表情", "能理解別人的目光、表情、姿勢及動作等非語言訊息的含意（例如別人皺眉、注視物品的意思）"] },
-        { title: "（二）社交適應", sub: "【語言及非語言溝通】 運用語言作不同用途", items: ["恰當地提出要求", "恰當地敘述事情", "恰當地解釋事物", "恰當地分享經驗、興趣或想法", "恰當地提出提議或意見", "恰當地提出問題"] },
-        { title: "（二）社交適應", sub: "【對話技巧】 恰當地開展、加入及完結對話", items: ["主動與別人開展交談或互動", "主動開展不同種類的話題", "在適當的時機加入其他人的對話，而不會打斷別人的說話", "恰當地完結對話或互動"] },
-        { title: "（二）社交適應", sub: "【對話技巧】 因應情況調節對話內容", items: ["當別人不明白或有誤解時，能重複一次、調整用詞、加入更多解釋、加入手勢、展示物品等方法以作澄清", "根據別人的反應來調整對話內容及行為（例如：留意到對方對自己的話題不感興趣時，便終止話題；留意到對方忙碌中，便暫停對話）"] },
-        { title: "（二）社交適應", sub: "【對話技巧】 維持對話及互動", items: ["別人對他說話時，會留心聆聽（例如：身體轉向對方、有眼神接觸、間中點頭等）", "別人對他說話時，會回應或回答", "能與人輪流說話，不會中途插入", "能保持恰當的說話頻次，不會過分霸佔或主導對話", "對話時不離題", "能提出想法、意見或更多資料，以維持對話", "能向對方提出問題，以維持對話", "對話時，遇上不明白之處會主動要求澄清", "在對話中，能自然地轉換話題"] },
-        { title: "（二）社交適應", sub: "【社交思考及解難】 解讀別人的想法", items: ["理解別人的觀點和感受", "能理解別人的意圖（包括善意及惡意）", "能明白自己的行為會如何影響別人對自己的印象（例如用手指著別人的臉說話，會令人覺得自己沒有禮貌）"] },
-        { title: "（二）社交適應", sub: "【社交思考及解難】 運用社交思考，調整自己的行為", items: ["能夠就對方的反應調整自己的行為（情緒、語言、非語言調整）", "能理解在不同場合的預期行為（例如圖書館、巴士、課室規則）"] },
-        { title: "（二）社交適應", sub: "【社交思考及解難】 平和地面對問題及合宜地解決困難", items: ["平和地面對和處理自己的過失", "平和地面對和處理不如意的事情", "能分辨是小問題或大問題，作出小反應或大反應", "做事或說話前會考慮後果", "能指出現在遇到的困難或問題", "能主動尋求成人或朋輩的幫助，及接受幫助", "能運用不同方法去解決問題"] },
-        { title: "（二）社交適應", sub: "【友善行為】 社交禮儀", items: ["能以表情或動作表示友好（例如微笑、擁抱）", "恰當地跟別人打招呼及回應別人的打招呼", "能主動道歉（例如對唔住、唔好意思）", "能運用表達禮貌的字詞（例如唔該、請、多謝）", "恰當地回應讚美和欣賞", "恰當地表示反對或拒絕"] },
-        { title: "（二）社交適應", sub: "【友善行為】 友善對待別人", items: ["懂得鼓勵、讚美和欣賞別人", "在合情合理的情況下，才投訴或指出別人的錯處", "別人打擾或阻礙到自己時，能合宜地處理", "能向別人表達關心", "主動幫助別人", "主動安慰別人", "分享別人的歡樂（例如別人勝出時，會一起歡呼）"] },
-        { title: "（二）社交適應", sub: "【遊戲活動】 與朋輩一起參與遊戲", items: ["接受朋輩加入自己的遊戲", "主動而合宜地加入朋輩的遊戲", "會主動邀請朋輩一起進行遊戲", "合宜地完結或離開與別人進行中的遊戲", "參與多樣化的興趣活動"] },
-        { title: "（二）社交適應", sub: "【遊戲活動】 在遊戲中表現合宜的行為", items: ["恰當地運用遊戲物品和設施", "懂得分享遊戲物品", "懂得與朋輩輪流玩耍", "遵守遊戲規則", "與朋輩一起玩假想遊戲", "當別人與自己有不同興趣時，能作出協商或妥協", "遊戲時，能平和地面對失敗"] },
-        { title: "（二）社交適應", sub: "【處理意見分歧及拒絕】", items: ["能察覺有意見分歧或衝突", "面對意見分歧，在合適的情況下願意妥協", "面對意見分歧，嘗試與人協商議以達成共識", "解釋自己所提議的好處，或別人所提議的壞處", "以包剪揼、鬥快舉手等方法決定誰作主", "提出輪流作主", "嘗試融合兩人的意見，以達成共識", "能合宜地拒絕對方的提議", "被對方拒絕時，能作出恰當回應"] },
-        { title: "（二）社交適應", sub: "【情緒表達、理解及調控】", items: ["能以表情、動作及語氣來表達情緒", "能運用基礎/進階情緒詞彙描述狀態", "明白情緒有不同的程度並恰當表達", "能解釋自己及別人出現情緒背後的原因", "能運用恰當策略調控情緒(憤怒/緊張/不開心/興奮)", "平復心情後能重新參與活動"] }
+        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
+        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 上課時給予反應", items: ["聽課時，會眼望老師及點頭表示明白", "被叫名字提問時，會嘗試作出回應", "能主動舉手回答老師問題"] },
+        { domain: 1, title: "（一）學習適應", sub: "【主題時間】 與朋輩討論", items: ["主動積極參與於與朋輩的討論中", "知道老師現在指示同學們討論甚麼題目", "能專心聆聽伙伴的分享或意見", "以點頭或說話回應對方，示意知道或同意", "分享自己的答案、想法或意見", "內容：有條理、與主題相關", "身體語言：轉向對方或有眼神接觸、保持適當距離", "語言：合適聲量、語氣有禮", "向伙伴提出相關問題"] },
+        { domain: 1, title: "（一）學習適應", sub: "【分組時間／功課時間】 獨立完成工作", items: ["自發地開展工作", "獨立地按指示完成工作", "持續專注地工作"] },
+        { domain: 1, title: "（一）學習適應", sub: "【分組時間／功課時間】 轉換及靈活性", items: ["能分辨事情重要性，計劃完成的先後次序", "能分辨事情重要性或按老師指令，加快完成桌上工作或暫時先放下未完成的工作", "接受流程或規則的改變", "按計劃自行由一項活動轉換到另一活動"] },
+        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 恰當運用語言", items: ["能清晰具體地表達", "能運用恰當語速", "能運用恰當聲量", "能運用自然恰當的說話風格，例如：避免過分直接、只顧表達自己喜好的話題（如：鐵路、天文、數學）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 理解及運用非語言訊息", items: ["保持恰當的眼神接觸", "聆聽別人說話時，能給予對方恰當的非語言訊息（如：點頭）", "按情景和關係，保持適當的社交距離", "溝通能運用恰當的動作、姿勢及面部表情", "能理解別人的目光、表情、姿勢及動作等非語言訊息的含意（例如別人皺眉、注視物品的意思）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【語言及非語言溝通】 運用語言作不同用途", items: ["恰當地提出要求", "恰當地敘述事情", "恰當地解釋事物", "恰當地分享經驗、興趣或想法", "恰當地提出提議或意見", "恰當地提出問題"] },
+        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 恰當地開展、加入及完結對話", items: ["主動與別人開展交談或互動", "主動開展不同種類的話題", "在適當的時機加入其他人的對話，而不會打斷別人的說話", "恰當地完結對話或互動"] },
+        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 因應情況調節對話內容", items: ["當別人不明白或有誤解時，能重複一次、調整用詞、加入更多解釋、加入手勢、展示物品等方法以作澄清", "根據別人的反應來調整對話內容及行為（例如：留意到對方對自己的話題不感興趣時，便終止話題；留意到對方忙碌中，便暫停對話）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【對話技巧】 維持對話及互動", items: ["別人對他說話時，會留心聆聽（例如：身體轉向對方、有眼神接觸、間中點頭等）", "別人對他說話時，會回應或回答", "能與人輪流說話，不會中途插入", "能保持恰當的說話頻次，不會過分霸佔或主導對話", "對話時不離題", "能提出想法、意見或更多資料，以維持對話", "能向對方提出問題，以維持對話", "對話時，遇上不明白之處會主動要求澄清", "在對話中，能自然地轉換話題"] },
+        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 解讀別人的想法", items: ["理解別人的觀點和感受", "能理解別人的意圖（包括善意及惡意）", "能明白自己的行為會如何影響別人對自己的印象（例如用手指著別人的臉說話，會令人覺得自己沒有禮貌）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 運用社交思考，調整自己的行為", items: ["能夠就對方的反應調整自己的行為（情緒、語言、非語言調整）", "能理解在不同場合的預期行為（例如圖書館、巴士、課室規則）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【社交思考及解難】 平和地面對問題及合宜地解決困難", items: ["平和地面對和處理自己的過失", "平和地面對和處理不如意的事情", "能分辨是小問題或大問題，作出小反應或大反應", "做事或說話前會考慮後果", "能指出現在遇到的困難或問題", "能主動尋求成人或朋輩的幫助，及接受幫助", "能運用不同方法去解決問題"] },
+        { domain: 2, title: "（二）社交適應", sub: "【友善行為】 社交禮儀", items: ["能以表情或動作表示友好（例如微笑、擁抱）", "恰當地跟別人打招呼及回應別人的打招呼", "能主動道歉（例如對唔住、唔好意思）", "能運用表達禮貌的字詞（例如唔該、請、多謝）", "恰當地回應讚美和欣賞", "恰當地表示反對或拒絕"] },
+        { title: "（二）社交適應", domain: 2, sub: "【友善行為】 友善對待別人", items: ["懂得鼓勵、讚美和欣賞別人", "在合情合理的情況下，才投訴或指出別人的錯處", "別人打擾或阻礙到自己時，能合宜地處理", "能向別人表達關心", "主動幫助別人", "主動安慰別人", "分享別人的歡樂（例如別人勝出時，會一起歡呼）"] },
+        { domain: 2, title: "（二）社交適應", sub: "【遊戲活動】 與朋輩一起參與遊戲", items: ["接受朋輩加入自己的遊戲", "主動而合宜地加入朋輩的遊戲", "會主動邀請朋輩一起進行遊戲", "合宜地完結或離開與別人進行中的遊戲", "參與多樣化的興趣活動"] },
+        { domain: 2, title: "（二）社交適應", sub: "【遊戲活動】 在遊戲中表現合宜的行為", items: ["恰當地運用遊戲物品和設施", "懂得分享遊戲物品", "懂得與朋輩輪流玩耍", "遵守遊戲規則", "與朋輩一起玩假想遊戲", "當別人與自己有不同興趣時，能作出協商或妥協", "遊戲時，能平和地面對失敗"] },
+        { domain: 2, title: "（二）社交適應", sub: "【處理意見分歧及拒絕】", items: ["能察覺有意見分歧或衝突", "面對意見分歧，在合適的情況下願意妥協", "面對意見分歧，嘗試與人協商議以達成共識", "解釋自己所提議的好處，或別人所提議的壞處", "以包剪揼、鬥快舉手等方法決定誰作主", "提出輪流作主", "嘗試融合兩人的意見，以達成共識", "能合宜地拒絕對方的提議", "被對方拒絕時，能作出恰當回應"] },
+        { domain: 2, title: "（二）社交適應", sub: "【情緒表達、理解及調控】", items: ["能以表情、動作及語氣來表達情緒", "能運用基礎/進階情緒詞彙描述狀態", "明白情緒有不同的程度並恰當表達", "能解釋自己及別人出現情緒背後的原因", "能運用恰當策略調控情緒(憤怒/緊張/不開心/興奮)", "平復心情後能重新參與活動"] }
     ];
 
-    function init() {
+    function getActiveLabels() {
+        return ALL_LABELS.slice(0, currentCount);
+    }
+
+    function renderStudentSetup(savedData) {
+        const labels = getActiveLabels();
+        const bar = document.getElementById('stuNamesBar');
+        const inputsWrap = document.getElementById('stuInputsContainer');
+        
+        bar.innerHTML = labels.map(ch => `<div id="bar${ch}">學生 ${ch}</div>`).join('');
+        inputsWrap.innerHTML = labels.map((ch, idx) => `
+            <div style="margin-bottom:${idx === labels.length - 1 ? '0' : '10px'}; display:flex; gap:8px;">
+                <input type="text" id="name${ch}" placeholder="${ch} 姓名" oninput="syncNames(); autoSave();" style="width:32%"> 
+                <input type="text" id="act${ch}" placeholder="${ch} 活動內容" oninput="autoSave();" style="width:68%">
+            </div>
+        `).join('');
+
+        if (savedData) {
+            labels.forEach(ch => {
+                if (savedData.n && savedData.n[ch]) document.getElementById('name' + ch).value = savedData.n[ch];
+                if (savedData.a && savedData.a[ch]) document.getElementById('act' + ch).value = savedData.a[ch];
+            });
+        }
+        syncNames();
+    }
+
+    function renderForm(savedData) {
         const wrap = document.getElementById('form-content');
+        const labels = getActiveLabels();
+        
+        // 保留目前兩個主區塊的展開/收合狀態
+        const oldSec1 = document.getElementById('domain-sec-1');
+        const oldSec2 = document.getElementById('domain-sec-2');
+        const isSec1Open = oldSec1 ? oldSec1.open : true;
+        const isSec2Open = oldSec2 ? oldSec2.open : true;
+
+        wrap.innerHTML = `
+            <details class="domain-section" id="domain-sec-1" ${isSec1Open ? 'open' : ''}>
+                <summary class="domain-header">（一）學習適應</summary>
+                <div class="domain-body" id="domain-body-1"></div>
+            </details>
+            <details class="domain-section" id="domain-sec-2" ${isSec2Open ? 'open' : ''}>
+                <summary class="domain-header">（二）社交適應</summary>
+                <div class="domain-body" id="domain-body-2"></div>
+            </details>
+        `;
+
+        const body1 = document.getElementById('domain-body-1');
+        const body2 = document.getElementById('domain-body-2');
+
         sections.forEach((sec, sIdx) => {
-            const anchor = document.createElement('div'); anchor.id = `cat${sIdx}`; anchor.style.scrollMarginTop = "130px"; wrap.appendChild(anchor);
+            const targetBody = sec.domain === 1 ? body1 : body2;
+            const anchor = document.createElement('div'); 
+            anchor.id = `cat${sIdx}`; 
+            anchor.style.scrollMarginTop = "140px"; 
+            targetBody.appendChild(anchor);
+
             sec.items.forEach((item, iIdx) => {
                 const id = `s${sIdx}i${iIdx}`;
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 card.innerHTML = `<div class="cat-tag">${sec.title}</div><div class="sub-tag">${sec.sub}</div><div class="item-text">${item}</div>
-                    <div class="scoring-row">${['A','B','C'].map(ch=>`<div class="stu-unit"><span class="stu-label dis${ch}">學生 ${ch}</span><div class="btn-group">
+                    <div class="scoring-row cols-${currentCount}">${labels.map(ch => `<div class="stu-unit"><span class="stu-label dis${ch}">學生 ${ch}</span><div class="btn-group">
                     <label><input type="radio" name="${id}_${ch}" value="0" onclick="handleRadioClick(this)"><span>0</span></label>
                     <label><input type="radio" name="${id}_${ch}" value="1" onclick="handleRadioClick(this)"><span>1</span></label>
                     <label><input type="radio" name="${id}_${ch}" value="2" onclick="handleRadioClick(this)"><span>2</span></label></div>
                     <textarea class="rem-box" id="rem_${id}_${ch}" oninput="autoSave()" placeholder="備註..."></textarea></div>`).join('')}</div>`;
-                wrap.appendChild(card);
+                targetBody.appendChild(card);
             });
         });
-        loadData();
+
+        if (savedData) {
+            for (let k in savedData.s) {
+                const el = document.querySelector(`input[name="${k}"][value="${savedData.s[k]}"]`);
+                if (el) {
+                    el.checked = true;
+                    el.dataset.wasChecked = "true";
+                }
+            }
+            for (let k in savedData.r) {
+                const el = document.getElementById(k);
+                if (el) el.value = savedData.r[k];
+            }
+        }
+        syncNames();
+    }
+
+    function changeStudentCount(newCount) {
+        // 先儲存目前畫面上的所有資料（包含尚未顯示出來的隱藏學生歷史資料）
+        const currentData = getStoredOrCurrentData();
+        currentCount = parseInt(newCount, 10);
+        currentData.count = currentCount;
+        localStorage.setItem('sl_vFinal_data', JSON.stringify(currentData));
+        
+        renderStudentSetup(currentData);
+        renderForm(currentData);
+    }
+
+    function jumpToCategory(catId) {
+        if (!catId) return;
+        const idx = parseInt(catId.replace('cat', ''), 10);
+        const sec = sections[idx];
+        if (sec) {
+            const domainEl = document.getElementById(`domain-sec-${sec.domain}`);
+            if (domainEl && !domainEl.open) {
+                domainEl.open = true;
+            }
+        }
+        setTimeout(() => {
+            const target = document.getElementById(catId);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+    }
+
+    function init() {
+        const raw = localStorage.getItem('sl_vFinal_data');
+        const savedData = raw ? JSON.parse(raw) : null;
+        if (savedData && savedData.count) {
+            currentCount = parseInt(savedData.count, 10);
+            document.getElementById('stuCount').value = currentCount;
+        }
+        if (savedData && savedData.d) {
+            document.getElementById('mainDate').value = savedData.d;
+        }
+        renderStudentSetup(savedData);
+        renderForm(savedData);
     }
 
     function handleRadioClick(radio) {
@@ -280,57 +452,68 @@
         autoSave();
     }
 
-    function syncNames() { ['A','B','C'].forEach(ch=>{const n=document.getElementById('name'+ch).value||'學生'+ch; document.querySelectorAll('.dis'+ch).forEach(e=>e.innerText=n); document.getElementById('bar'+ch).innerText=n;}); }
+    function syncNames() { 
+        getActiveLabels().forEach(ch => {
+            const inputEl = document.getElementById('name' + ch);
+            const n = (inputEl && inputEl.value) ? inputEl.value : '學生 ' + ch;
+            document.querySelectorAll('.dis' + ch).forEach(e => e.innerText = n);
+            const barEl = document.getElementById('bar' + ch);
+            if (barEl) barEl.innerText = n;
+        }); 
+    }
     
+    function getStoredOrCurrentData() {
+        const raw = localStorage.getItem('sl_vFinal_data');
+        const base = raw ? JSON.parse(raw) : { count: currentCount, d: "", n: {}, a: {}, s: {}, r: {} };
+        base.count = currentCount;
+        base.d = document.getElementById('mainDate').value;
+        
+        getActiveLabels().forEach(ch => {
+            const nEl = document.getElementById('name' + ch);
+            const aEl = document.getElementById('act' + ch);
+            if (nEl) base.n[ch] = nEl.value;
+            if (aEl) base.a[ch] = aEl.value;
+        });
+
+        // 清除目前顯示中題目的舊勾選，再重新寫入最新狀態
+        sections.forEach((sec, sIdx) => {
+            sec.items.forEach((item, iIdx) => {
+                getActiveLabels().forEach(ch => {
+                    const key = `s${sIdx}i${iIdx}_${ch}`;
+                    delete base.s[key];
+                });
+            });
+        });
+
+        document.querySelectorAll('input[type="radio"]:checked').forEach(i => base.s[i.name] = i.value);
+        document.querySelectorAll('.rem-box').forEach(t => base.r[t.id] = t.value);
+        return base;
+    }
+
     function autoSave() {
-        const s = {
-            d: document.getElementById('mainDate').value,
-            n: { A: document.getElementById('nameA').value, B: document.getElementById('nameB').value, C: document.getElementById('nameC').value },
-            a: { A: document.getElementById('actA').value, B: document.getElementById('actB').value, C: document.getElementById('actC').value },
-            s: {}, r: {}
-        };
-        document.querySelectorAll('input[type="radio"]:checked').forEach(i => s.s[i.name] = i.value);
-        document.querySelectorAll('.rem-box').forEach(t => s.r[t.id] = t.value);
+        const s = getStoredOrCurrentData();
         localStorage.setItem('sl_vFinal_data', JSON.stringify(s));
     }
 
-    function loadData() {
-        const raw = localStorage.getItem('sl_vFinal_data');
-        if (!raw) return;
-        const d = JSON.parse(raw);
-        document.getElementById('mainDate').value = d.d || "";
-        ['A','B','C'].forEach(ch => {
-            document.getElementById('name'+ch).value = d.n[ch] || "";
-            document.getElementById('act'+ch).value = d.a[ch] || "";
-        });
-        syncNames();
-        for (let k in d.s) {
-            const el = document.querySelector(`input[name="${k}"][value="${d.s[k]}"]`);
-            if (el) {
-                el.checked = true;
-                el.dataset.wasChecked = "true";
-            }
-        }
-        for (let k in d.r) {
-            const el = document.getElementById(k);
-            if (el) el.value = d.r[k];
-        }
+    function clearAll() { 
+        if(confirm('確定清除所有記錄嗎？')) { 
+            localStorage.removeItem('sl_vFinal_data'); 
+            location.reload(); 
+        } 
     }
-
-    function clearAll() { if(confirm('確定清除所有記錄嗎？')) { localStorage.removeItem('sl_vFinal_data'); location.reload(); } }
 
     function getSummary() { 
         const date = document.getElementById('mainDate').value || "未填";
         let h = `<div style="padding:20px; width:750px; background:white; font-family:'Microsoft JhengHei', sans-serif; color:#000;">
                  <h2 style="color:#2b5876; border-bottom:2px solid #2b5876; padding-bottom:6px;">課室支援觀察記錄摘要</h2>
                  <p><strong>觀察日期：</strong>${date}</p><hr>`;
-        ['A','B','C'].forEach(ch => {
+        getActiveLabels().forEach(ch => {
             let rows = "";
             sections.forEach((sec, sIdx) => { 
                 sec.items.forEach((item, iIdx) => {
                     const id = `s${sIdx}i${iIdx}_${ch}`;
                     const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
-                    const rm = document.getElementById(`rem_${id}`).value.trim();
+                    const rm = document.getElementById(`rem_${id}`)?.value.trim() || "";
                     
                     if (sc === "1" || rm !== "") {
                         let scLabel = "";
@@ -346,8 +529,10 @@
                 });
             });
             if (rows) {
-                h += `<h3 style="color:#2c3e50; margin-top:20px;">學生：${document.getElementById('name'+ch).value||ch}</h3>
-                      <p><strong>活動內容：</strong>${document.getElementById('act'+ch).value||"---"}</p>
+                const stuName = document.getElementById('name'+ch)?.value || `學生 ${ch}`;
+                const stuAct = document.getElementById('act'+ch)?.value || "---";
+                h += `<h3 style="color:#2c3e50; margin-top:20px;">學生：${stuName}</h3>
+                      <p><strong>活動內容：</strong>${stuAct}</p>
                       <table style="width:100%;border-collapse:collapse;border:1px solid #333;">
                         <tr>
                             <th style="border:1px solid #333;padding:8px;background:#eef2f3;width:60%;text-align:left;">觀察範疇與項目</th>
@@ -399,4 +584,3 @@
 </script>
 </body>
 </html>
-
