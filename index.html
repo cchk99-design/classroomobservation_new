@@ -640,6 +640,16 @@
             { wch: 32 }
         ];
 
+        // 凍結首欄 (A欄：學生姓名) 及表頭前4列
+        ws['!freeze'] = { xSplit: 1, ySplit: 4, topLeftCell: 'B5', activePane: 'bottomRight', state: 'frozen' };
+        ws['!views'] = [{
+            state: 'frozen',
+            xSplit: 1,
+            ySplit: 4,
+            topLeftCell: 'B5',
+            activePane: 'bottomRight'
+        }];
+
         XLSX.utils.book_append_sheet(wb, ws, "觀察記錄摘要");
         const dateStr = document.getElementById('mainDate').value || new Date().toISOString().slice(0, 10);
         XLSX.writeFile(wb, `課室觀察記錄_${dateStr}.xlsx`);
