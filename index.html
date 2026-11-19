@@ -11,6 +11,7 @@
             --primary-grad: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 52%, #ec4899 100%);
             --sec1-grad: linear-gradient(135deg, #2563eb 0%, #7c3aed 55%, #db2777 100%);
             --sec2-grad: linear-gradient(135deg, #4f46e5 0%, #9333ea 55%, #e11d48 100%);
+            --overview-grad: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 52%, #be185d 100%);
             --sub-grad: linear-gradient(135deg, #eff6ff 0%, #f3e8ff 50%, #fdf2f8 100%);
             --tag-grad: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 60%, #ec4899 100%);
             --green-grad: linear-gradient(135deg, #059669 0%, #10b981 100%);
@@ -95,11 +96,11 @@
         }
         details.info-section input:focus { outline: none; border-color: #8b5cf6; }
 
-        /* 兩大主範疇摺疊區塊 */
+        /* 兩大主範疇與總覽摺疊區塊 */
         details.domain-section {
             margin-bottom: 16px;
             border-radius: 16px;
-            background: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.65);
             box-shadow: 0 6px 20px rgba(79, 70, 229, 0.08);
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.85);
@@ -120,6 +121,9 @@
         }
         details.domain-section#domain-sec-1 > summary.domain-header {
             background: var(--sec1-grad);
+        }
+        details.domain-section#overview-sec > summary.domain-header {
+            background: var(--overview-grad);
         }
         details.domain-section > summary.domain-header::after {
             content: "展開 ▼";
@@ -257,6 +261,119 @@
         }
         .rem-box:focus { outline: none; border-color: #8b5cf6; }
 
+        /* 分數與備註總覽樣式 */
+        .overview-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            border: 1px solid #e0e7ff;
+            font-size: 13px;
+        }
+        .overview-filter-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .ov-btn {
+            border: 1px solid #c7d2fe;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .ov-btn.active {
+            background: var(--primary-grad);
+            color: white;
+            border-color: transparent;
+        }
+        .overview-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #c7d2fe;
+            background: #fff;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.06);
+            margin-bottom: 8px;
+        }
+        .overview-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+            min-width: 560px;
+        }
+        .overview-table th, .overview-table td {
+            border-bottom: 1px solid #e0e7ff;
+            border-right: 1px solid #e0e7ff;
+            padding: 8px 10px;
+            vertical-align: top;
+            text-align: left;
+        }
+        .overview-table th {
+            background: #eef2ff;
+            color: #312e81;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        /* 凍結首欄（觀察項目）以便左右滑動對照兒童 */
+        .overview-table th.sticky-col,
+        .overview-table td.sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: #f8faff;
+            min-width: 170px;
+            max-width: 230px;
+            border-right: 2px solid #a5b4fc;
+        }
+        .overview-table th.sticky-col {
+            z-index: 4;
+            background: #e0e7ff;
+        }
+        .ov-cat-row td {
+            background: var(--sub-grad) !important;
+            color: #4338ca;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 7px 10px;
+        }
+        .ov-score-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 3px;
+        }
+        .ov-s0 { background: var(--red-grad); }
+        .ov-s1 { background: var(--orange-grad); }
+        .ov-s2 { background: var(--green-grad); }
+        .ov-rem-text {
+            font-size: 12px;
+            color: #334155;
+            line-height: 1.4;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .ov-empty-cell {
+            color: #cbd5e1;
+            font-size: 12px;
+            text-align: center;
+        }
+
         /* 浮動按鈕 */
         .fab-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 999; }
         .fab { 
@@ -268,6 +385,7 @@
         }
         .fab:active { transform: scale(0.94); }
         .fab-clear { background: var(--red-grad); }
+        .fab-ov { background: var(--overview-grad); }
         .fab-excel { background: var(--excel-grad); color: #042f2e; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
         .fab-png { background: var(--blue-grad); color: #0f172a; }
         .fab-pdf { background: var(--primary-grad); }
@@ -304,10 +422,26 @@
         <div id="stuInputsContainer" class="stu-inputs-grid"></div>
     </details>
     <div id="form-content"></div>
+
+    <!-- 分數與備註總覽區塊 -->
+    <details class="domain-section" id="overview-sec" ontoggle="if(this.open) renderOverview();">
+        <summary class="domain-header">📊 分數與備註總覽（一覽所有兒童表現）</summary>
+        <div class="domain-body">
+            <div class="overview-toolbar">
+                <div class="overview-filter-group">
+                    <button type="button" class="ov-btn active" id="btnOvFilled" onclick="setOverviewMode('filled')">僅顯示已評分／有備註</button>
+                    <button type="button" class="ov-btn" id="btnOvAll" onclick="setOverviewMode('all')">顯示全部項目</button>
+                </div>
+                <button type="button" class="ov-btn" onclick="renderOverview()">🔄 更新總覽</button>
+            </div>
+            <div class="overview-table-wrap" id="overviewTableWrap"></div>
+        </div>
+    </details>
 </div>
 
 <div class="fab-container no-print">
     <button class="fab fab-clear" onclick="clearAll()">清空</button>
+    <button class="fab fab-ov" onclick="jumpToOverview()">總覽</button>
     <button class="fab fab-excel" onclick="doExcel()">Excel</button>
     <button class="fab fab-png" onclick="doPNG()">PNG</button>
     <button class="fab fab-pdf" onclick="doPDF()">PDF</button>
@@ -318,6 +452,7 @@
 <script>
     const ALL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     let currentCount = 3;
+    let overviewMode = 'filled'; // 'filled' | 'all'
 
     const sections = [
         { domain: 1, title: "（一）學習適應", sub: "【主題時間】 遵守規則及指令", items: ["能安坐", "能先舉手、後發言", "在合適時間才舉手發言或參與", "能持續地留心聆聽", "能合作並跟從老師指令"] },
@@ -372,7 +507,6 @@
         const wrap = document.getElementById('form-content');
         const labels = getActiveLabels();
         
-        // 保留目前主區塊與細分範疇區塊的展開/收合狀態（預設皆為 false 收合）
         const oldSec1 = document.getElementById('domain-sec-1');
         const oldSec2 = document.getElementById('domain-sec-2');
         const isSec1Open = oldSec1 ? oldSec1.open : false;
@@ -443,6 +577,105 @@
             }
         }
         syncNames();
+        renderOverview();
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function setOverviewMode(mode) {
+        overviewMode = mode;
+        document.getElementById('btnOvFilled').classList.toggle('active', mode === 'filled');
+        document.getElementById('btnOvAll').classList.toggle('active', mode === 'all');
+        renderOverview();
+    }
+
+    function jumpToOverview() {
+        const ovSec = document.getElementById('overview-sec');
+        if (ovSec) {
+            ovSec.open = true;
+            renderOverview();
+            ovSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function renderOverview() {
+        const wrap = document.getElementById('overviewTableWrap');
+        if (!wrap) return;
+        const labels = getActiveLabels();
+
+        let theadCols = labels.map(ch => {
+            const name = document.getElementById('name' + ch)?.value.trim() || `學生 ${ch}`;
+            const act = document.getElementById('act' + ch)?.value.trim();
+            return `<th style="min-width:130px;">${escapeHtml(name)}${act ? `<br><span style="font-weight:normal;font-size:11px;color:#6366f1;">(${escapeHtml(act)})</span>` : ''}</th>`;
+        }).join('');
+
+        let tbodyHtml = '';
+        let totalShownItems = 0;
+
+        sections.forEach((sec, sIdx) => {
+            let sectionRows = '';
+            sec.items.forEach((item, iIdx) => {
+                let rowHasAnyData = false;
+                let cellsHtml = '';
+
+                labels.forEach(ch => {
+                    const id = `s${sIdx}i${iIdx}_${ch}`;
+                    const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
+                    const rm = document.getElementById(`rem_${id}`)?.value.trim() || "";
+
+                    if (sc !== undefined || rm !== "") {
+                        rowHasAnyData = true;
+                        let badge = '';
+                        if (sc === "0") badge = `<span class="ov-score-badge ov-s0">0分</span>`;
+                        else if (sc === "1") badge = `<span class="ov-score-badge ov-s1">1分 (目標)</span>`;
+                        else if (sc === "2") badge = `<span class="ov-score-badge ov-s2">2分</span>`;
+
+                        let remHtml = rm ? `<div class="ov-rem-text">${escapeHtml(rm)}</div>` : '';
+                        cellsHtml += `<td>${badge}${remHtml}</td>`;
+                    } else {
+                        cellsHtml += `<td class="ov-empty-cell">—</td>`;
+                    }
+                });
+
+                if (overviewMode === 'all' || rowHasAnyData) {
+                    totalShownItems++;
+                    sectionRows += `<tr>
+                        <td class="sticky-col">• ${escapeHtml(item)}</td>
+                        ${cellsHtml}
+                    </tr>`;
+                }
+            });
+
+            if (sectionRows) {
+                tbodyHtml += `<tr class="ov-cat-row">
+                    <td class="sticky-col">${escapeHtml(sec.title)} ｜ ${escapeHtml(sec.sub)}</td>
+                    <td colspan="${labels.length}"></td>
+                </tr>` + sectionRows;
+            }
+        });
+
+        if (totalShownItems === 0) {
+            wrap.innerHTML = `<div style="padding:20px; text-align:center; color:#64748b; font-size:13px;">
+                目前尚未填寫任何評分或備註，請先於上方評分表記錄，或點擊「顯示全部項目」檢視空白總表。
+            </div>`;
+            return;
+        }
+
+        wrap.innerHTML = `<table class="overview-table">
+            <thead>
+                <tr>
+                    <th class="sticky-col">觀察項目（左右滑動可對照）</th>
+                    ${theadCols}
+                </tr>
+            </thead>
+            <tbody>${tbodyHtml}</tbody>
+        </table>`;
     }
 
     function changeStudentCount(newCount) {
@@ -521,6 +754,10 @@
     function autoSave() {
         const s = getStoredOrCurrentData();
         localStorage.setItem('sl_vFinal_data', JSON.stringify(s));
+        const ovSec = document.getElementById('overview-sec');
+        if (ovSec && ovSec.open) {
+            renderOverview();
+        }
     }
 
     function clearAll() { 
