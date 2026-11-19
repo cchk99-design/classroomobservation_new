@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>言語治療課室觀察記錄表</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { 
@@ -17,7 +16,6 @@
             --green-grad: linear-gradient(135deg, #059669 0%, #10b981 100%);
             --orange-grad: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
             --red-grad: linear-gradient(135deg, #dc2626 0%, #f43f5e 100%);
-            --blue-grad: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
             --excel-grad: linear-gradient(135deg, #0d9488 0%, #2dd4bf 100%);
             --bg-grad: linear-gradient(160deg, #eff6ff 0%, #f3e8ff 50%, #fce7f3 100%);
             --card: rgba(255, 255, 255, 0.96);
@@ -387,16 +385,11 @@
         .fab-clear { background: var(--red-grad); }
         .fab-ov { background: var(--overview-grad); }
         .fab-excel { background: var(--excel-grad); color: #042f2e; text-shadow: 0 1px 0 rgba(255,255,255,0.4); }
-        .fab-png { background: var(--blue-grad); color: #0f172a; }
-        .fab-pdf { background: var(--primary-grad); }
-
-        /* 導出區 */
-        #export-temp { position: absolute; left: -9999px; background: white; width: 800px; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div class="sticky-header no-print">
+<div class="sticky-header">
     <div class="header-top">
         <span>課室支援觀察記錄表</span>
         <div class="header-controls">
@@ -416,7 +409,7 @@
     <div class="stu-names-bar" id="stuNamesBar"></div>
 </div>
 
-<div class="main-container no-print">
+<div class="main-container">
     <details class="info-section" open>
         <summary>設定學生姓名及活動內容（點擊展開 / 收合）</summary>
         <div id="stuInputsContainer" class="stu-inputs-grid"></div>
@@ -439,15 +432,11 @@
     </details>
 </div>
 
-<div class="fab-container no-print">
+<div class="fab-container">
     <button class="fab fab-clear" onclick="clearAll()">清空</button>
     <button class="fab fab-ov" onclick="jumpToOverview()">總覽</button>
     <button class="fab fab-excel" onclick="doExcel()">Excel</button>
-    <button class="fab fab-png" onclick="doPNG()">PNG</button>
-    <button class="fab fab-pdf" onclick="doPDF()">PDF</button>
 </div>
-
-<div id="export-temp"></div>
 
 <script>
     const ALL_LABELS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -765,65 +754,6 @@
             localStorage.removeItem('sl_vFinal_data'); 
             location.reload(); 
         } 
-    }
-
-    function getSummary() { 
-        const date = document.getElementById('mainDate').value || "未填";
-        let h = `<div style="padding:20px; width:750px; background:white; font-family:'Microsoft JhengHei', sans-serif; color:#000;">
-                 <h2 style="color:#4f46e5; border-bottom:2px solid #8b5cf6; padding-bottom:6px;">課室支援觀察記錄摘要</h2>
-                 <p><strong>觀察日期：</strong>${date}</p><hr>`;
-        getActiveLabels().forEach(ch => {
-            let rows = "";
-            sections.forEach((sec, sIdx) => { 
-                sec.items.forEach((item, iIdx) => {
-                    const id = `s${sIdx}i${iIdx}_${ch}`;
-                    const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
-                    const rm = document.getElementById(`rem_${id}`)?.value.trim() || "";
-                    
-                    if (sc === "1" || rm !== "") {
-                        let scLabel = "";
-                        if (sc === "0") scLabel = "<b>【0分】</b> ";
-                        else if (sc === "1") scLabel = "<b>【目標 (1分)】</b> ";
-                        else if (sc === "2") scLabel = "<b>【2分】</b> ";
-                        
-                        rows += `<tr>
-                            <td style="border:1px solid #333;padding:8px;">${sec.title} - ${sec.sub}<br>• ${item}</td>
-                            <td style="border:1px solid #333;padding:8px;">${scLabel}${rm}</td>
-                        </tr>`;
-                    }
-                });
-            });
-            if (rows) {
-                const stuName = document.getElementById('name'+ch)?.value || `學生 ${ch}`;
-                const stuAct = document.getElementById('act'+ch)?.value || "---";
-                h += `<h3 style="color:#4338ca; margin-top:20px;">學生：${stuName}</h3>
-                      <p><strong>活動內容：</strong>${stuAct}</p>
-                      <table style="width:100%;border-collapse:collapse;border:1px solid #333;">
-                        <tr>
-                            <th style="border:1px solid #333;padding:8px;background:#eef2ff;width:60%;text-align:left;">觀察範疇與項目</th>
-                            <th style="border:1px solid #333;padding:8px;background:#eef2ff;width:40%;text-align:left;">目標 / 記錄</th>
-                        </tr>
-                        ${rows}
-                      </table><br>`;
-            }
-        });
-        return h + `</div>`;
-    }
-
-    function doPDF() { 
-        document.getElementById('export-temp').innerHTML = getSummary(); 
-        window.print(); 
-    }
-
-    async function doPNG() { 
-        const t = document.getElementById('export-temp'); 
-        t.innerHTML = getSummary(); 
-        const cvs = await html2canvas(t, {scale: 2}); 
-        const a = document.createElement('a'); 
-        const dateStr = document.getElementById('mainDate').value || new Date().toISOString().slice(0,10);
-        a.download = `課室觀察記錄_${dateStr}.png`; 
-        a.href = cvs.toDataURL(); 
-        a.click(); 
     }
 
     function doExcel() {
