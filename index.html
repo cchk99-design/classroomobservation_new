@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>言語治療課室觀察記錄表</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- 引入 SheetJS 以生成原生 .xlsx 檔案，完美支援 iPad Excel App -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { 
@@ -37,66 +36,79 @@
         .sticky-header { 
             position: sticky; top: 0; z-index: 100; 
             background: var(--primary-grad); 
-            color: white; padding: 12px 15px; 
+            color: white; padding: 10px 15px; 
             box-shadow: 0 4px 20px rgba(79, 70, 229, 0.28); 
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 18px;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
         }
-        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; gap: 8px; flex-wrap: wrap; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; gap: 8px; flex-wrap: wrap; }
         .header-controls { display: flex; gap: 8px; align-items: center; }
         .header-top input[type="date"], .count-select {
-            border: none; border-radius: 8px; padding: 6px 10px; 
+            border: none; border-radius: 8px; padding: 5px 9px; 
             background: rgba(255, 255, 255, 0.95); color: var(--text-dark); font-weight: bold; font-size: 13px;
         }
-        .jump-menu { 
-            width: 100%; padding: 10px 12px; border-radius: 10px; 
-            background: rgba(255, 255, 255, 0.96); color: var(--text-dark); 
-            border: none; font-size: 14px; font-weight: bold; 
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
-        }
         .stu-names-bar { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); 
-            gap: 6px; font-size: 12px; font-weight: bold; text-align: center; margin-top: 10px; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); 
+            gap: 5px; font-size: 12px; font-weight: bold; text-align: center; 
         }
         .stu-names-bar div { 
             background: rgba(255, 255, 255, 0.22); 
             backdrop-filter: blur(4px);
-            padding: 5px 4px; border-radius: 8px; 
+            padding: 4px 4px; border-radius: 6px; 
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
             border: 1px solid rgba(255,255,255,0.32);
         }
 
-        .main-container { padding: 15px; padding-bottom: 140px; max-width: 1300px; margin: auto; }
+        .main-container { padding: 14px; padding-bottom: 140px; max-width: 1300px; margin: auto; }
         
-        /* 學生設定摺疊區 */
+        /* 學生設定摺疊區（緊湊省空間設計） */
         details.info-section { 
-            background: var(--card); padding: 14px; border-radius: 14px; 
-            margin-bottom: 18px; border: 1px solid rgba(199, 210, 254, 0.9); 
-            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.07);
+            background: var(--card); padding: 10px 12px; border-radius: 12px; 
+            margin-bottom: 14px; border: 1px solid rgba(199, 210, 254, 0.9); 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.06);
         }
-        details.info-section > summary { font-weight: bold; cursor: pointer; color: #4338ca; font-size: 15px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-        details.info-section > summary::after { content: "▼"; font-size: 12px; transition: transform 0.2s; }
+        details.info-section > summary { font-weight: bold; cursor: pointer; color: #4338ca; font-size: 14px; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        details.info-section > summary::after { content: "▼"; font-size: 11px; transition: transform 0.2s; }
         details.info-section[open] > summary::after { transform: rotate(180deg); }
+        
+        .stu-inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            padding-top: 8px;
+        }
+        @media (min-width: 768px) {
+            .stu-inputs-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px 12px;
+            }
+        }
+        .stu-input-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
         details.info-section input {
-            border: 1px solid #c7d2fe; border-radius: 8px; padding: 8px 10px; font-size: 14px;
+            border: 1px solid #c7d2fe; border-radius: 6px; padding: 5px 8px; font-size: 13px;
+            height: 28px; box-sizing: border-box;
             transition: border 0.2s;
         }
         details.info-section input:focus { outline: none; border-color: #8b5cf6; }
 
         /* 兩大主範疇摺疊區塊 */
         details.domain-section {
-            margin-bottom: 22px;
-            border-radius: 18px;
+            margin-bottom: 16px;
+            border-radius: 16px;
             background: rgba(255, 255, 255, 0.55);
-            box-shadow: 0 6px 22px rgba(79, 70, 229, 0.09);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.08);
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.85);
         }
         details.domain-section > summary.domain-header {
             background: var(--sec2-grad);
             color: white;
-            padding: 15px 18px;
-            font-size: 17px;
+            padding: 14px 16px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             list-style: none;
@@ -113,7 +125,7 @@
             content: "展開 ▼";
             font-size: 12px;
             background: rgba(255, 255, 255, 0.22);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 12px;
             font-weight: normal;
             flex-shrink: 0;
@@ -122,23 +134,23 @@
             content: "收合 ▲";
         }
         .domain-body {
-            padding: 14px 12px 6px 12px;
+            padding: 12px 10px 4px 10px;
         }
 
         /* 細分範疇（每個子項目群組獨立摺疊） */
         details.sub-domain-section {
-            margin-bottom: 12px;
-            border-radius: 14px;
+            margin-bottom: 10px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.82);
             border: 1px solid #e0e7ff;
-            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.06);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.05);
             overflow: hidden;
         }
         details.sub-domain-section > summary.sub-domain-header {
             background: var(--sub-grad);
             color: #4338ca;
-            padding: 12px 15px;
-            font-size: 15px;
+            padding: 11px 14px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             list-style: none;
@@ -151,10 +163,10 @@
         }
         details.sub-domain-section > summary.sub-domain-header::after {
             content: "展開 ▾";
-            font-size: 12px;
+            font-size: 11px;
             color: #7c3aed;
             background: rgba(255, 255, 255, 0.85);
-            padding: 3px 9px;
+            padding: 2px 8px;
             border-radius: 10px;
             flex-shrink: 0;
             box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -168,8 +180,8 @@
 
         /* 卡片設計 */
         .item-card { 
-            background: var(--card); border-radius: 14px; padding: 16px; 
-            margin-bottom: 16px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.06); 
+            background: var(--card); border-radius: 14px; padding: 15px; 
+            margin-bottom: 14px; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.06); 
             border: 1px solid rgba(224, 231, 255, 0.9);
             position: relative; overflow: hidden;
         }
@@ -186,7 +198,7 @@
             margin-bottom: 6px; font-weight: bold; letter-spacing: 0.5px;
         }
         .sub-tag { font-size: 13px; color: #6d28d9; display: block; margin-bottom: 6px; font-weight: bold; }
-        .item-text { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: var(--text-dark); line-height: 1.5; }
+        .item-text { font-size: 16px; font-weight: bold; margin-bottom: 14px; color: var(--text-dark); line-height: 1.5; }
 
         /* 動態人數評分區 */
         .scoring-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -283,40 +295,13 @@
             <input type="date" id="mainDate" onchange="autoSave()">
         </div>
     </div>
-    <select class="jump-menu" onchange="jumpToCategory(this.value)">
-        <option value="">快速跳轉範疇...</option>
-        <optgroup label="（一）學習適應">
-            <option value="cat0">【主題時間】 遵守規則及指令</option>
-            <option value="cat1">【主題時間】 上課時給予反應</option>
-            <option value="cat2">【主題時間】 與朋輩討論</option>
-            <option value="cat3">【分組時間／功課時間】 獨立完成工作</option>
-            <option value="cat4">【分組時間／功課時間】 轉換及靈活性</option>
-        </optgroup>
-        <optgroup label="（二）社交適應">
-            <option value="cat5">【語言及非語言溝通】 恰當運用語言</option>
-            <option value="cat6">【語言及非語言溝通】 理解及運用非語言訊息</option>
-            <option value="cat7">【語言及非語言溝通】 運用語言作不同用途</option>
-            <option value="cat8">【對話技巧】 恰當地開展、加入及完結對話</option>
-            <option value="cat9">【對話技巧】 因應情況調節對話內容</option>
-            <option value="cat10">【對話技巧】 維持對話及互動</option>
-            <option value="cat11">【社交思考及解難】 解讀別人的想法</option>
-            <option value="cat12">【社交思考及解難】 運用社交思考，調整自己的行為</option>
-            <option value="cat13">【社交思考及解難】 平和地面對問題及合宜地解決困難</option>
-            <option value="cat14">【友善行為】 社交禮儀</option>
-            <option value="cat15">【友善行為】 友善對待別人</option>
-            <option value="cat16">【遊戲活動】 與朋輩一起參與遊戲</option>
-            <option value="cat17">【遊戲活動】 在遊戲中表現合宜的行為</option>
-            <option value="cat18">【處理意見分歧及拒絕】</option>
-            <option value="cat19">【情緒表達、理解及調控】</option>
-        </optgroup>
-    </select>
     <div class="stu-names-bar" id="stuNamesBar"></div>
 </div>
 
 <div class="main-container no-print">
     <details class="info-section" open>
         <summary>設定學生姓名及活動內容（點擊展開 / 收合）</summary>
-        <div id="stuInputsContainer" style="padding-top:12px;"></div>
+        <div id="stuInputsContainer" class="stu-inputs-grid"></div>
     </details>
     <div id="form-content"></div>
 </div>
@@ -367,10 +352,10 @@
         const inputsWrap = document.getElementById('stuInputsContainer');
         
         bar.innerHTML = labels.map(ch => `<div id="bar${ch}">學生 ${ch}</div>`).join('');
-        inputsWrap.innerHTML = labels.map((ch, idx) => `
-            <div style="margin-bottom:${idx === labels.length - 1 ? '0' : '10px'}; display:flex; gap:8px;">
-                <input type="text" id="name${ch}" placeholder="${ch} 姓名" oninput="syncNames(); autoSave();" style="width:32%"> 
-                <input type="text" id="act${ch}" placeholder="${ch} 活動內容" oninput="autoSave();" style="width:68%">
+        inputsWrap.innerHTML = labels.map(ch => `
+            <div class="stu-input-row">
+                <input type="text" id="name${ch}" placeholder="${ch} 姓名" oninput="syncNames(); autoSave();" style="width:34%"> 
+                <input type="text" id="act${ch}" placeholder="${ch} 活動內容" oninput="autoSave();" style="width:66%">
             </div>
         `).join('');
 
@@ -387,11 +372,11 @@
         const wrap = document.getElementById('form-content');
         const labels = getActiveLabels();
         
-        // 保留目前主區塊與細分範疇區塊的展開/收合狀態
+        // 保留目前主區塊與細分範疇區塊的展開/收合狀態（預設皆為 false 收合）
         const oldSec1 = document.getElementById('domain-sec-1');
         const oldSec2 = document.getElementById('domain-sec-2');
-        const isSec1Open = oldSec1 ? oldSec1.open : true;
-        const isSec2Open = oldSec2 ? oldSec2.open : true;
+        const isSec1Open = oldSec1 ? oldSec1.open : false;
+        const isSec2Open = oldSec2 ? oldSec2.open : false;
 
         const openSubState = {};
         document.querySelectorAll('details.sub-domain-section').forEach(el => {
@@ -415,12 +400,11 @@
         sections.forEach((sec, sIdx) => {
             const targetDomainBody = sec.domain === 1 ? body1 : body2;
             const subId = `cat${sIdx}`;
-            const isSubOpen = openSubState.hasOwnProperty(subId) ? openSubState[subId] : true;
+            const isSubOpen = openSubState.hasOwnProperty(subId) ? openSubState[subId] : false;
 
             const subDetails = document.createElement('details');
             subDetails.className = 'sub-domain-section';
             subDetails.id = subId;
-            subDetails.style.scrollMarginTop = "145px";
             if (isSubOpen) subDetails.open = true;
 
             subDetails.innerHTML = `
@@ -469,26 +453,6 @@
         
         renderStudentSetup(currentData);
         renderForm(currentData);
-    }
-
-    function jumpToCategory(catId) {
-        if (!catId) return;
-        const idx = parseInt(catId.replace('cat', ''), 10);
-        const sec = sections[idx];
-        if (sec) {
-            const domainEl = document.getElementById(`domain-sec-${sec.domain}`);
-            if (domainEl && !domainEl.open) {
-                domainEl.open = true;
-            }
-            const subEl = document.getElementById(catId);
-            if (subEl && !subEl.open) {
-                subEl.open = true;
-            }
-        }
-        setTimeout(() => {
-            const target = document.getElementById(catId);
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 50);
     }
 
     function init() {
@@ -663,19 +627,17 @@
             rowsData.push(["目前尚無評分為 1 分或填有備註之項目", "", "", "", "", "", ""]);
         }
 
-        // 使用 SheetJS 建立標準 .xlsx 活頁簿，完美支援 iPad Excel App 及 Numbers
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(rowsData);
 
-        // 設定欄位寬度讓閱讀更清晰
         ws['!cols'] = [
-            { wch: 14 }, // 學生姓名
-            { wch: 20 }, // 活動內容
-            { wch: 16 }, // 主範疇
-            { wch: 30 }, // 細分範疇
-            { wch: 38 }, // 觀察項目
-            { wch: 18 }, // 評分
-            { wch: 32 }  // 備註記錄
+            { wch: 14 },
+            { wch: 20 },
+            { wch: 16 },
+            { wch: 30 },
+            { wch: 38 },
+            { wch: 18 },
+            { wch: 32 }
         ];
 
         XLSX.utils.book_append_sheet(wb, ws, "觀察記錄摘要");
