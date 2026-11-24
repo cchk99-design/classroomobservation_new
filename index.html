@@ -776,7 +776,7 @@
                     const sc = document.querySelector(`input[name="${id}"]:checked`)?.value;
                     const rm = document.getElementById(`rem_${id}`)?.value.trim() || "";
 
-                    if (sc === "1" || rm !== "") {
+                    if (sc !== undefined || rm !== "") {
                         hasAnyRow = true;
                         let scText = "";
                         if (sc === "0") scText = "0分 (未能做到)";
@@ -791,7 +791,7 @@
         });
 
         if (!hasAnyRow) {
-            rowsData.push(["目前尚無評分為 1 分或填有備註之項目", "", "", "", "", "", ""]);
+            rowsData.push(["目前尚無任何已評分或填有備註之項目", "", "", "", "", "", ""]);
         }
 
         const wb = XLSX.utils.book_new();
